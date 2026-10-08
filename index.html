@@ -117,15 +117,19 @@ body.appendChild(tr);
 updateCurrentDayClasses();
 }
 function updateCurrentDayClasses() {
-const dayMap = { Pirmdiena: 1, Otrdiena: 2, Trešdiena: 3, Ceturtdiena: 4, Svētdiena: 0 };
 const now = new Date();
 const currentDayNum = now.getDay();
 let todayIndex = -1;
+if (currentDayNum === 5 || currentDayNum === 6 || currentDayNum === 0) {
+todayIndex = 4;
+} else {
+const dayMap = { Pirmdiena: 1, Otrdiena: 2, Trešdiena: 3, Ceturtdiena: 4 };
 days.forEach((day, index) => {
 if (dayMap[day] === currentDayNum) {
 todayIndex = index;
 }
 });
+}
 if (todayIndex === -1) {
 todayIndex = 0;
 }
