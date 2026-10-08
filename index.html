@@ -22,16 +22,17 @@ tbody tr:hover { background-color: var(--hover-bg); }
 .day-header { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 0 16px; font-size: 0.95rem; }
 .day-date { font-weight: 500; opacity: 0.7; font-size: 0.85rem; }
 .sub-header { display: flex; width: 100%; height: 100%; background-color: var(--header-bg); font-size: 0.9rem; font-weight: 600; color: var(--header-text); }
-.sub-name { width: 70%; border-right: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; }
-.sub-room { width: 30%; display: flex; align-items: center; justify-content: center; }
-.cell-split { display: flex; width: 100%; height: 100%; cursor: pointer; transition: background-color 0.15s ease; }
-.cell-split.slot-available:not(.day-passed):hover { background-color: rgba(34, 197, 94, 0.45) !important; color: #ffffff; }
-.cell-split.slot-taken:hover { background-color: #9ca3af !important; color: #ffffff; }
-.cell-split.slot-mine:hover { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; }
+.sub-name { width: 70%; min-width: 0; flex-shrink: 0; border-right: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; }
+.sub-room { width: 30%; min-width: 0; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.cell-split { display: flex; width: 100%; max-width: 100%; height: 100%; cursor: pointer; transition: background-color 0.15s ease; -webkit-tap-highlight-color: transparent; }
+@media (hover: hover) { .cell-split.slot-available.is-day-today:not(.day-passed):not(.user-has-slot):hover { background-color: rgba(34, 197, 94, 0.45) !important; color: #ffffff; } .cell-split.slot-taken:hover { background-color: #9ca3af !important; color: #ffffff; } .cell-split.slot-mine:hover { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; } }
+.cell-split.slot-available.is-day-today:not(.day-passed):not(.user-has-slot):active { background-color: rgba(34, 197, 94, 0.45) !important; color: #ffffff; }
+.cell-split.slot-taken:active { background-color: #9ca3af !important; color: #ffffff; }
+.cell-split.slot-mine:active { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; }
 .cell-split.slot-mine { background-color: rgba(239, 68, 68, 0.2) !important; }
 .cell-split.day-passed { background-color: #f1f5f9 !important; color: #94a3b8; cursor: not-allowed; }
-.cell-name { width: 70%; border-right: 1px solid var(--border-color); height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: background-color 0.15s ease; }
-.cell-room { width: 30%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: background-color 0.15s ease; }
+.cell-name { width: 70%; min-width: 0; flex-shrink: 0; border-right: 1px solid var(--border-color); height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: background-color 0.15s ease; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 4px; }
+.cell-room { width: 30%; min-width: 0; flex-shrink: 0; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: background-color 0.15s ease; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 4px; }
 .login-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(15, 23, 42, 0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; }
 .login-box { background: white; padding: 32px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 320px; text-align: center; }
 .login-box h2 { margin-top: 0; margin-bottom: 20px; color: var(--text-color); }
@@ -41,6 +42,7 @@ tbody tr:hover { background-color: var(--hover-bg); }
 .login-box button:disabled { opacity: 0.6; cursor: not-allowed; }
 .error-msg { color: #ef4444; font-size: 0.85rem; margin-top: 10px; display: none; }
 .loading-msg { color: #64748b; font-size: 0.85rem; margin-top: 10px; display: none; }
+@media (max-width: 768px) { .topbar { justify-content: center; } .topbar > span:first-child { display: none; } .topbar-right { color: var(--topbar-text); font-size: 1.1rem; font-weight: 600; } table { table-layout: fixed; width: 100%; } th:first-child, td:first-child { width: 80px; max-width: 80px; } th:not(:first-child), td:not(:first-child) { display: none; } th.is-today, td.is-today { display: table-cell !important; width: calc(100% - 80px); max-width: calc(100% - 80px); } }
 </style>
 </head>
 <body>
@@ -112,6 +114,34 @@ tr.appendChild(td);
 }
 body.appendChild(tr);
 }
+updateCurrentDayClasses();
+}
+function updateCurrentDayClasses() {
+const dayMap = { Pirmdiena: 1, Otrdiena: 2, Trešdiena: 3, Ceturtdiena: 4, Svētdiena: 0 };
+const now = new Date();
+const currentDayNum = now.getDay();
+let todayIndex = -1;
+days.forEach((day, index) => {
+if (dayMap[day] === currentDayNum) {
+todayIndex = index;
+}
+});
+if (todayIndex === -1) {
+todayIndex = 0;
+}
+const table = document.querySelector("table");
+if (!table) return;
+const rows = table.querySelectorAll("tr");
+rows.forEach(row => {
+const children = Array.from(row.children);
+children.forEach((cell, i) => {
+if (i === todayIndex + 1) {
+cell.classList.add("is-today");
+} else {
+cell.classList.remove("is-today");
+}
+});
+});
 }
 function renderSchedule(schedule) {
 buildEmptyTable();
@@ -125,8 +155,15 @@ scheduleMap[`${item.day}_${item.time}`] = item;
 const currentUserId = Number(window.currentUserId);
 const tbody = document.getElementById("scheduleBody");
 const dayMap = { Pirmdiena: 1, Otrdiena: 2, Trešdiena: 3, Ceturtdiena: 4, Svētdiena: 7 };
+const checkDayMap = { Pirmdiena: 1, Otrdiena: 2, Trešdiena: 3, Ceturtdiena: 4, Svētdiena: 0 };
 const now = new Date();
 const currentDay = now.getDay() === 0 ? 7 : now.getDay();
+const daysUserHasSlot = new Set();
+scheduleArray.forEach(item => {
+if (item && Number(item.user_id) === currentUserId && item.day) {
+daysUserHasSlot.add(item.day);
+}
+});
 times.forEach((time, rowIndex) => {
 const row = tbody.children[rowIndex];
 if (!row) return;
@@ -138,10 +175,17 @@ cell.dataset.day = day;
 cell.dataset.time = time;
 const targetDay = dayMap[day];
 const isPassed = targetDay !== undefined && targetDay < currentDay;
+const isToday = checkDayMap[day] === now.getDay();
 const item = scheduleMap[`${day}_${time}`];
 const nameEl = cell.querySelector(".cell-name");
 const roomEl = cell.querySelector(".cell-room");
-cell.classList.remove("slot-available", "slot-taken", "slot-mine", "day-passed");
+cell.classList.remove("slot-available", "slot-taken", "slot-mine", "day-passed", "user-has-slot", "is-day-today");
+if (isToday) {
+cell.classList.add("is-day-today");
+}
+if (daysUserHasSlot.has(day)) {
+cell.classList.add("user-has-slot");
+}
 if (isPassed) {
 cell.classList.add("day-passed");
 }
