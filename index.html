@@ -24,15 +24,15 @@ tbody tr:hover { background-color: var(--hover-bg); }
 .sub-header { display: flex; width: 100%; height: 100%; background-color: var(--header-bg); font-size: 0.9rem; font-weight: 600; color: var(--header-text); }
 .sub-name { width: 70%; min-width: 0; flex-shrink: 0; border-right: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; }
 .sub-room { width: 30%; min-width: 0; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-.cell-split { display: flex; width: 100%; max-width: 100%; height: 100%; cursor: pointer; transition: background-color 0.15s ease; -webkit-tap-highlight-color: transparent; }
+.cell-split { display: flex; width: 100%; max-width: 100%; height: 100%; cursor: pointer; transition: background-color 0.15s ease; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 @media (hover: hover) { .cell-split.slot-available.is-day-today:not(.day-passed):not(.user-has-slot):hover { background-color: rgba(34, 197, 94, 0.45) !important; color: #ffffff; } .cell-split.slot-taken:hover { background-color: #9ca3af !important; color: #ffffff; } .cell-split.slot-mine:hover { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; } }
 .cell-split.slot-available.is-day-today:not(.day-passed):not(.user-has-slot):active { background-color: rgba(34, 197, 94, 0.45) !important; color: #ffffff; }
 .cell-split.slot-taken:active { background-color: #9ca3af !important; color: #ffffff; }
 .cell-split.slot-mine:active { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; }
 .cell-split.slot-mine { background-color: rgba(239, 68, 68, 0.2) !important; }
 .cell-split.day-passed { background-color: #f1f5f9 !important; color: #94a3b8; cursor: not-allowed; }
-.cell-name { width: 70%; min-width: 0; flex-shrink: 0; border-right: 1px solid var(--border-color); height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: background-color 0.15s ease; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 4px; }
-.cell-room { width: 30%; min-width: 0; flex-shrink: 0; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: background-color 0.15s ease; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 4px; }
+.cell-name { width: 70%; min-width: 0; flex-shrink: 0; border-right: 1px solid var(--border-color); height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: background-color 0.15s ease; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 4px; pointer-events: none; }
+.cell-room { width: 30%; min-width: 0; flex-shrink: 0; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: background-color 0.15s ease; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 4px; pointer-events: none; }
 .login-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(15, 23, 42, 0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; }
 .login-box { background: white; padding: 32px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 320px; text-align: center; }
 .login-box h2 { margin-top: 0; margin-bottom: 20px; color: var(--text-color); }
@@ -102,7 +102,7 @@ for (let i = 0; i < days.length; i++) {
 const td = document.createElement("td");
 const split = document.createElement("div");
 split.className = "cell-split";
-split.addEventListener("click", () => handleSlotClick(split));
+split.addEventListener("click", (e) => handleSlotClick(e, split));
 const name = document.createElement("div");
 name.className = "cell-name";
 const room = document.createElement("div");
@@ -211,13 +211,14 @@ cell.classList.add("slot-available");
 });
 });
 }
-async function handleSlotClick(cell) {
+async function handleSlotClick(e, cell) {
+if (e) e.stopPropagation();
 if (!window.currentUserId) return;
 const day = cell.dataset.day;
 const time = cell.dataset.time;
 const dayMap = { Pirmdiena: 1, Otrdiena: 2, Trešdiena: 3, Ceturtdiena: 4, Svētdiena: 0 };
 const now = new Date();
-if (dayMap[day] !== now.getDay()) {
+if (dayMap[day] !== undefined && dayMap[day] !== now.getDay()) {
 return;
 }
 const isMine = cell.classList.contains("slot-mine");
