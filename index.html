@@ -25,12 +25,13 @@ tbody tr:hover { background-color: var(--hover-bg); }
 .sub-name { width: 70%; min-width: 0; flex-shrink: 0; border-right: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; }
 .sub-room { width: 30%; min-width: 0; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 .cell-split { display: flex; width: 100%; max-width: 100%; height: 100%; cursor: pointer; transition: background-color 0.15s ease; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
-@media (hover: hover) { .cell-split.slot-available.is-day-today:not(.day-passed):not(.user-has-slot):hover { background-color: rgba(34, 197, 94, 0.45) !important; color: #ffffff; } .cell-split.slot-taken:hover { background-color: #9ca3af !important; color: #ffffff; } .cell-split.slot-mine:hover { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; } }
-.cell-split.slot-available.is-day-today:not(.day-passed):not(.user-has-slot):active { background-color: rgba(34, 197, 94, 0.45) !important; color: #ffffff; }
+@media (hover: hover) { .cell-split.slot-available.is-selectable:not(.user-has-slot):hover { background-color: rgba(34, 197, 94, 0.45) !important; color: #ffffff; } .cell-split.slot-taken:hover { background-color: #9ca3af !important; color: #ffffff; } .cell-split.is-admin.slot-taken:hover { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; } .cell-split.slot-mine:hover { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; } }
+.cell-split.slot-available.is-selectable:not(.user-has-slot):active { background-color: rgba(34, 197, 94, 0.45) !important; color: #ffffff; }
 .cell-split.slot-taken:active { background-color: #9ca3af !important; color: #ffffff; }
+.cell-split.is-admin.slot-taken:active { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; }
 .cell-split.slot-mine:active { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; }
 .cell-split.slot-mine { background-color: rgba(239, 68, 68, 0.2) !important; }
-.cell-split.day-passed { background-color: #f1f5f9 !important; color: #94a3b8; cursor: not-allowed; }
+.cell-split:not(.is-selectable) { background-color: #f1f5f9 !important; color: #94a3b8; cursor: not-allowed; }
 .cell-name { width: 70%; min-width: 0; flex-shrink: 0; border-right: 1px solid var(--border-color); height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: background-color 0.15s ease; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 4px; pointer-events: none; }
 .cell-room { width: 30%; min-width: 0; flex-shrink: 0; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: background-color 0.15s ease; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 4px; pointer-events: none; }
 .login-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(15, 23, 42, 0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; }
@@ -61,24 +62,7 @@ tbody tr:hover { background-color: var(--hover-bg); }
 </div>
 <div class="table-container">
 <table>
-<thead>
-<tr>
-<th>Diena</th>
-<th><div class="day-header"><span class="day-name">Pirmdiena</span><span class="day-date"></span></div></th>
-<th><div class="day-header"><span class="day-name">Otrdiena</span><span class="day-date"></span></div></th>
-<th><div class="day-header"><span class="day-name">Trešdiena</span><span class="day-date"></span></div></th>
-<th><div class="day-header"><span class="day-name">Ceturtdiena</span><span class="day-date"></span></div></th>
-<th><div class="day-header"><span class="day-name">Svētdiena</span><span class="day-date"></span></div></th>
-</tr>
-<tr>
-<th>Laiks</th>
-<th><div class="sub-header"><span class="sub-name">Vārds</span><span class="sub-room">Istaba</span></div></th>
-<th><div class="sub-header"><span class="sub-name">Vārds</span><span class="sub-room">Istaba</span></div></th>
-<th><div class="sub-header"><span class="sub-name">Vārds</span><span class="sub-room">Istaba</span></div></th>
-<th><div class="sub-header"><span class="sub-name">Vārds</span><span class="sub-room">Istaba</span></div></th>
-<th><div class="sub-header"><span class="sub-name">Vārds</span><span class="sub-room">Istaba</span></div></th>
-</tr>
-</thead>
+<thead id="scheduleHeader"></thead>
 <tbody id="scheduleBody"></tbody>
 </table>
 </div>
@@ -88,9 +72,84 @@ const SUPABASE_URL = "https://xeglssmfqmpyxyyvtukt.supabase.co";
 const SUPABASE_KEY = "sb_publishable_GdbyhxPdUbLZXT9WpcobrA_Nvj5x-P_";
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const times = ["15:30","15:45","16:00","16:15","16:30","16:45","17:00","17:15","17:30","17:45","18:00","18:15","18:30","18:45","19:00","19:15","19:30","19:45","20:00","20:15","20:30","20:45","21:00","21:15","21:30","21:45","22:00","22:15","22:30","22:45"];
-const days = ["Pirmdiena","Otrdiena","Trešdiena","Ceturtdiena","Svētdiena"];
+let activeDaysConfig = [];
 let realtimeChannel = null;
+
+function calculateActiveDays() {
+const now = new Date();
+const currentDayNum = now.getDay();
+const daysList = [
+{ name: "Pirmdiena", dayNum: 1 },
+{ name: "Otrdiena", dayNum: 2 },
+{ name: "Trešdiena", dayNum: 3 },
+{ name: "Ceturtdiena", dayNum: 4 },
+{ name: "Svētdiena", dayNum: 0 }
+];
+let active = [];
+if (currentDayNum === 5 || currentDayNum === 6 || currentDayNum === 0) {
+const sundayDate = new Date(now);
+let diffToSun = (0 - currentDayNum + 7) % 7;
+if (currentDayNum === 0) diffToSun = 0;
+sundayDate.setDate(now.getDate() + diffToSun);
+active.push({ name: "Svētdiena", date: sundayDate, dayNum: 0 });
+const nextMon = new Date(sundayDate);
+nextMon.setDate(sundayDate.getDate() + 1);
+active.push({ name: "Pirmdiena", date: nextMon, dayNum: 1 });
+const nextTue = new Date(sundayDate);
+nextTue.setDate(sundayDate.getDate() + 2);
+active.push({ name: "Otrdiena", date: nextTue, dayNum: 2 });
+const nextWed = new Date(sundayDate);
+nextWed.setDate(sundayDate.getDate() + 3);
+active.push({ name: "Trešdiena", date: nextWed, dayNum: 3 });
+const nextThu = new Date(sundayDate);
+nextThu.setDate(sundayDate.getDate() + 4);
+active.push({ name: "Ceturtdiena", date: nextThu, dayNum: 4 });
+} else {
+const todayIndex = daysList.findIndex(d => d.dayNum === currentDayNum);
+for (let i = todayIndex; i < daysList.length; i++) {
+const item = daysList[i];
+const date = new Date(now);
+date.setDate(now.getDate() + (item.dayNum - currentDayNum));
+active.push({ name: item.name, date: date, dayNum: item.dayNum });
+}
+}
+return active;
+}
+
+function formatDate(dateObj) {
+return `${String(dateObj.getDate()).padStart(2,"0")}.${String(dateObj.getMonth() + 1).padStart(2,"0")}`;
+}
+
+function buildTableHeader() {
+const header = document.getElementById("scheduleHeader");
+header.innerHTML = "";
+const tr1 = document.createElement("tr");
+const thDiena = document.createElement("th");
+thDiena.textContent = "Diena";
+tr1.appendChild(thDiena);
+activeDaysConfig.forEach((dayObj, index) => {
+const th = document.createElement("th");
+if (index === 0) th.classList.add("is-today");
+th.innerHTML = `<div class="day-header"><span class="day-name">${dayObj.name}</span><span class="day-date">${formatDate(dayObj.date)}</span></div>`;
+tr1.appendChild(th);
+});
+const tr2 = document.createElement("tr");
+const thLaiks = document.createElement("th");
+thLaiks.textContent = "Laiks";
+tr2.appendChild(thLaiks);
+activeDaysConfig.forEach((dayObj, index) => {
+const th = document.createElement("th");
+if (index === 0) th.classList.add("is-today");
+th.innerHTML = `<div class="sub-header"><span class="sub-name">Vārds</span><span class="sub-room">Istaba</span></div>`;
+tr2.appendChild(th);
+});
+header.appendChild(tr1);
+header.appendChild(tr2);
+}
+
 function buildEmptyTable() {
+activeDaysConfig = calculateActiveDays();
+buildTableHeader();
 const body = document.getElementById("scheduleBody");
 body.innerHTML = "";
 for (const time of times) {
@@ -98,8 +157,9 @@ const tr = document.createElement("tr");
 const timeCell = document.createElement("td");
 timeCell.textContent = time;
 tr.appendChild(timeCell);
-for (let i = 0; i < days.length; i++) {
+for (let i = 0; i < activeDaysConfig.length; i++) {
 const td = document.createElement("td");
+if (i === 0) td.classList.add("is-today");
 const split = document.createElement("div");
 split.className = "cell-split";
 split.addEventListener("click", (e) => handleSlotClick(e, split));
@@ -114,39 +174,8 @@ tr.appendChild(td);
 }
 body.appendChild(tr);
 }
-updateCurrentDayClasses();
 }
-function updateCurrentDayClasses() {
-const now = new Date();
-const currentDayNum = now.getDay();
-let todayIndex = -1;
-if (currentDayNum === 5 || currentDayNum === 6 || currentDayNum === 0) {
-todayIndex = 4;
-} else {
-const dayMap = { Pirmdiena: 1, Otrdiena: 2, Trešdiena: 3, Ceturtdiena: 4 };
-days.forEach((day, index) => {
-if (dayMap[day] === currentDayNum) {
-todayIndex = index;
-}
-});
-}
-if (todayIndex === -1) {
-todayIndex = 0;
-}
-const table = document.querySelector("table");
-if (!table) return;
-const rows = table.querySelectorAll("tr");
-rows.forEach(row => {
-const children = Array.from(row.children);
-children.forEach((cell, i) => {
-if (i === todayIndex + 1) {
-cell.classList.add("is-today");
-} else {
-cell.classList.remove("is-today");
-}
-});
-});
-}
+
 function renderSchedule(schedule) {
 buildEmptyTable();
 const scheduleArray = Array.isArray(schedule) ? schedule : [];
@@ -158,40 +187,41 @@ scheduleMap[`${item.day}_${item.time}`] = item;
 }
 const currentUserId = Number(window.currentUserId);
 const tbody = document.getElementById("scheduleBody");
-const dayMap = { Pirmdiena: 1, Otrdiena: 2, Trešdiena: 3, Ceturtdiena: 4, Svētdiena: 7 };
-const checkDayMap = { Pirmdiena: 1, Otrdiena: 2, Trešdiena: 3, Ceturtdiena: 4, Svētdiena: 0 };
-const now = new Date();
-const currentDay = now.getDay() === 0 ? 7 : now.getDay();
 const daysUserHasSlot = new Set();
 scheduleArray.forEach(item => {
 if (item && Number(item.user_id) === currentUserId && item.day) {
 daysUserHasSlot.add(item.day);
 }
 });
+const now = new Date();
+const currentDayNum = now.getDay();
+const isFriOrSat = (currentDayNum === 5 || currentDayNum === 6);
 times.forEach((time, rowIndex) => {
 const row = tbody.children[rowIndex];
 if (!row) return;
-days.forEach((day, dayIndex) => {
+activeDaysConfig.forEach((dayObj, dayIndex) => {
 const cells = row.querySelectorAll(".cell-split");
 const cell = cells[dayIndex];
 if (!cell) return;
+const day = dayObj.name;
 cell.dataset.day = day;
 cell.dataset.time = time;
-const targetDay = dayMap[day];
-const isPassed = targetDay !== undefined && targetDay < currentDay;
-const isToday = checkDayMap[day] === now.getDay();
+const isSelectable = isFriOrSat ? (dayIndex === 0) : (dayIndex === 0 || dayIndex === 1);
 const item = scheduleMap[`${day}_${time}`];
 const nameEl = cell.querySelector(".cell-name");
 const roomEl = cell.querySelector(".cell-room");
-cell.classList.remove("slot-available", "slot-taken", "slot-mine", "day-passed", "user-has-slot", "is-day-today");
-if (isToday) {
+cell.classList.remove("slot-available", "slot-taken", "slot-mine", "user-has-slot", "is-day-today", "is-selectable", "is-admin");
+if (currentUserId === 1) {
+cell.classList.add("is-admin");
+}
+if (dayIndex === 0) {
 cell.classList.add("is-day-today");
+}
+if (isSelectable) {
+cell.classList.add("is-selectable");
 }
 if (daysUserHasSlot.has(day)) {
 cell.classList.add("user-has-slot");
-}
-if (isPassed) {
-cell.classList.add("day-passed");
 }
 if (item) {
 cell.dataset.scheduleId = item.id;
@@ -208,30 +238,36 @@ cell.dataset.scheduleId = "";
 cell.dataset.userId = "";
 nameEl.textContent = "";
 roomEl.textContent = "";
-if (!isPassed) {
 cell.classList.add("slot-available");
 }
-}
 });
 });
 }
+
 async function handleSlotClick(e, cell) {
 if (e) e.stopPropagation();
 if (!window.currentUserId) return;
 const day = cell.dataset.day;
 const time = cell.dataset.time;
-const dayMap = { Pirmdiena: 1, Otrdiena: 2, Trešdiena: 3, Ceturtdiena: 4, Svētdiena: 0 };
+const dayIndex = activeDaysConfig.findIndex(d => d.name === day);
 const now = new Date();
-if (dayMap[day] !== undefined && dayMap[day] !== now.getDay()) {
+const currentDayNum = now.getDay();
+const isFriOrSat = (currentDayNum === 5 || currentDayNum === 6);
+const maxSelectableIndex = isFriOrSat ? 0 : 1;
+if (dayIndex > maxSelectableIndex) {
 return;
 }
 const isMine = cell.classList.contains("slot-mine");
 const isAvailable = cell.classList.contains("slot-available");
+const isAdmin = window.currentUserId === 1;
+if (isAdmin && isAvailable) return;
+if (!isAdmin) {
 if (!isAvailable && !isMine) return;
 if (isAvailable) {
 const existingUserSlots = document.querySelectorAll(`.cell-split.slot-mine[data-day="${day}"]`);
 if (existingUserSlots.length > 0) {
 return;
+}
 }
 }
 try {
@@ -255,22 +291,7 @@ return;
 console.error("Slot toggle error:", err);
 }
 }
-function setDates() {
-const dayMap = { Pirmdiena: 1, Otrdiena: 2, Trešdiena: 3, Ceturtdiena: 4, Piektdiena: 5, Sestdiena: 6, Svētdiena: 7 };
-const now = new Date();
-const currentDay = now.getDay() === 0 ? 7 : now.getDay();
-document.querySelectorAll(".day-header").forEach(header => {
-const nameEl = header.querySelector(".day-name");
-const dateEl = header.querySelector(".day-date");
-const targetDay = dayMap[nameEl.textContent.trim()];
-if (targetDay !== undefined) {
-const diff = targetDay - currentDay;
-const targetDate = new Date(now);
-targetDate.setDate(now.getDate() + diff);
-dateEl.textContent = `${String(targetDate.getDate()).padStart(2,"0")}.${String(targetDate.getMonth() + 1).padStart(2,"0")}`;
-}
-});
-}
+
 function subscribeToScheduleChanges() {
 if (realtimeChannel) return;
 realtimeChannel = supabaseClient
@@ -284,11 +305,13 @@ loadSchedule();
 )
 .subscribe();
 }
+
 async function loadSchedule() {
 const { data, error } = await supabaseClient.from("schedule").select("id,day,time,name,room,user_id").order("time", { ascending: true });
 if (error) throw error;
 renderSchedule(data);
 }
+
 async function login() {
 const passwordInput = document.getElementById("passwordInput");
 const loginButton = document.getElementById("loginButton");
@@ -332,12 +355,12 @@ loadingMsg.style.display = "none";
 loginButton.disabled = false;
 }
 }
+
 document.getElementById("passwordInput").addEventListener("keydown", event => {
 if (event.key === "Enter") login();
 });
 window.addEventListener("DOMContentLoaded", () => {
 buildEmptyTable();
-setDates();
 });
 </script>
 </body>
