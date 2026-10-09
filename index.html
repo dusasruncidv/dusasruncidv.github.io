@@ -2,12 +2,13 @@
 <html lang="lv">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dušu Saraksts</title>
 <style>
 :root { --bg-color: #f8fafc; --border-color: #e2e8f0; --header-bg: #f1f5f9; --header-text: #334155; --text-color: #0f172a; --topbar-bg: #1e293b; --topbar-text: #f8fafc; --focus-ring: #3b82f6; --sub-header-bg: #f8fafc; --hover-bg: #f1f5f9; }
 * { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: var(--bg-color); color: var(--text-color); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; flex-direction: column; }.topbar { height: 50px; background-color: var(--topbar-bg); color: var(--topbar-text); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; font-weight: 600; font-size: 1.1rem; letter-spacing: 0.025em; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
+html, body { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden; background-color: var(--bg-color); color: var(--text-color); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; flex-direction: column; }
+.topbar { height: 50px; background-color: var(--topbar-bg); color: var(--topbar-text); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; font-weight: 600; font-size: 1.1rem; letter-spacing: 0.025em; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
 .topbar-right { font-size: 0.95rem; font-weight: 500; color: #94a3b8; }
 .table-container { flex: 1; height: calc(100vh - 50px); overflow: auto; }
 table { border-collapse: separate; border-spacing: 0; width: 100%; height: 100%; table-layout: fixed; background-color: #ffffff; }
@@ -24,16 +25,16 @@ tbody tr:hover { background-color: var(--hover-bg); }
 .sub-name { width: 70%; min-width: 0; flex-shrink: 0; border-right: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; }
 .sub-room { width: 30%; min-width: 0; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 .cell-split { display: flex; width: 100%; max-width: 100%; height: 100%; cursor: pointer; transition: background-color 0.15s ease; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
-@media (hover: hover) { .cell-split.slot-available.is-selectable:not(.user-has-slot):not(.is-past):hover { background-color: rgba(34, 197, 94, 0.45) !important; color: #ffffff; } .cell-split.slot-taken:not(.is-past):hover { background-color: #9ca3af !important; color: #ffffff; } .cell-split.is-admin.slot-taken:not(.is-past):hover { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; } .cell-split.slot-mine:not(.is-past):hover { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; } }
-.cell-split.slot-available.is-selectable:not(.user-has-slot):not(.is-past):active { background-color: rgba(34, 197, 94, 0.45) !important; color: #ffffff; }
-.cell-split.slot-taken:not(.is-past):active { background-color: #9ca3af !important; color: #ffffff; }
-.cell-split.is-admin.slot-taken:not(.is-past):active { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; }
-.cell-split.slot-mine:not(.is-past):active { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; }
+@media (hover: hover) { .cell-split.slot-available.is-selectable:not(.user-has-slot):hover { background-color: rgba(34, 197, 94, 0.45) !important; color: #ffffff; } .cell-split.slot-taken:hover { background-color: #9ca3af !important; color: #ffffff; } .cell-split.is-admin.slot-taken:hover { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; } .cell-split.slot-mine:hover { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; } }
+.cell-split.slot-available.is-selectable:not(.user-has-slot):active { background-color: rgba(34, 197, 94, 0.45) !important; color: #ffffff; }
+.cell-split.slot-taken:active { background-color: #9ca3af !important; color: #ffffff; }
+.cell-split.is-admin.slot-taken:active { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; }
+.cell-split.slot-mine:active { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; }
 .cell-split.slot-mine { background-color: rgba(239, 68, 68, 0.2) !important; }
-.cell-split:not(.is-selectable), .cell-split.is-past { background-color: #f1f5f9 !important; color: #94a3b8; cursor: not-allowed; opacity: 0.6; }
+.cell-split:not(.is-selectable) { background-color: #f1f5f9 !important; color: #94a3b8; cursor: not-allowed; }
 .cell-name { width: 70%; min-width: 0; flex-shrink: 0; border-right: 1px solid var(--border-color); height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: background-color 0.15s ease; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 4px; pointer-events: none; }
 .cell-room { width: 30%; min-width: 0; flex-shrink: 0; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: background-color 0.15s ease; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 4px; pointer-events: none; }
-.login-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh; background-color: rgba(15, 23, 42, 0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+.login-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(15, 23, 42, 0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; }
 .login-box { background: white; padding: 32px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 320px; text-align: center; }
 .login-box h2 { margin-top: 0; margin-bottom: 20px; color: var(--text-color); }
 .login-box input { width: 100%; padding: 10px; margin-bottom: 16px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 1rem; }
@@ -42,7 +43,7 @@ tbody tr:hover { background-color: var(--hover-bg); }
 .login-box button:disabled { opacity: 0.6; cursor: not-allowed; }
 .error-msg { color: #ef4444; font-size: 0.85rem; margin-top: 10px; display: none; }
 .loading-msg { color: #64748b; font-size: 0.85rem; margin-top: 10px; display: none; }
-@media (max-width: 768px) { html, body { height: 100vh; height: 100dvh; overflow: hidden; } .table-container { flex: 1; min-height: 0; height: auto; padding-bottom: env(safe-area-inset-bottom, 0px); overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; touch-action: pan-y; overscroll-behavior-y: contain; } .topbar { flex-shrink: 0; justify-content: center; } .topbar > span:first-child { display: none; } .topbar-right { color: var(--topbar-text); font-size: 1.1rem; font-weight: 600; } table { table-layout: fixed; width: 100%; height: auto; } tr { height: 40px; } th:first-child, td:first-child { width: 80px; max-width: 80px; } th:not(:first-child), td:not(:first-child) { display: none; } th.is-today, td.is-today { display: table-cell !important; width: calc(100% - 80px); max-width: calc(100% - 80px); } }
+@media (max-width: 768px) { .topbar { justify-content: center; } .topbar > span:first-child { display: none; } .topbar-right { color: var(--topbar-text); font-size: 1.1rem; font-weight: 600; } table { table-layout: fixed; width: 100%; } th:first-child, td:first-child { width: 80px; max-width: 80px; } th:not(:first-child), td:not(:first-child) { display: none; } th.is-today, td.is-today { display: table-cell !important; width: calc(100% - 80px); max-width: calc(100% - 80px); } }
 </style>
 </head>
 <body>
@@ -73,14 +74,6 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const times = ["15:30","15:45","16:00","16:15","16:30","16:45","17:00","17:15","17:30","17:45","18:00","18:15","18:30","18:45","19:00","19:15","19:30","19:45","20:00","20:15","20:30","20:45","21:00","21:15","21:30","21:45","22:00","22:15","22:30","22:45"];
 let activeDaysConfig = [];
 let realtimeChannel = null;
-
-function isTimePast(timeStr) {
-const now = new Date();
-const [hours, minutes] = timeStr.split(":").map(Number);
-const slotTime = new Date(now);
-slotTime.setHours(hours, minutes, 0, 0);
-return now > slotTime;
-}
 
 function calculateActiveDays() {
 const now = new Date();
@@ -213,21 +206,16 @@ if (!cell) return;
 const day = dayObj.name;
 cell.dataset.day = day;
 cell.dataset.time = time;
-const isToday = dayIndex === 0;
-const isPast = isToday && isTimePast(time);
 const isSelectable = isFriOrSat ? (dayIndex === 0) : (dayIndex === 0 || dayIndex === 1);
 const item = scheduleMap[`${day}_${time}`];
 const nameEl = cell.querySelector(".cell-name");
 const roomEl = cell.querySelector(".cell-room");
-cell.classList.remove("slot-available", "slot-taken", "slot-mine", "user-has-slot", "is-day-today", "is-selectable", "is-admin", "is-past");
+cell.classList.remove("slot-available", "slot-taken", "slot-mine", "user-has-slot", "is-day-today", "is-selectable", "is-admin");
 if (currentUserId === 1) {
 cell.classList.add("is-admin");
 }
-if (isToday) {
+if (dayIndex === 0) {
 cell.classList.add("is-day-today");
-}
-if (isPast) {
-cell.classList.add("is-past");
 }
 if (isSelectable) {
 cell.classList.add("is-selectable");
@@ -259,7 +247,6 @@ cell.classList.add("slot-available");
 async function handleSlotClick(e, cell) {
 if (e) e.stopPropagation();
 if (!window.currentUserId) return;
-if (cell.classList.contains("is-past")) return;
 const day = cell.dataset.day;
 const time = cell.dataset.time;
 const dayIndex = activeDaysConfig.findIndex(d => d.name === day);
@@ -374,7 +361,6 @@ if (event.key === "Enter") login();
 });
 window.addEventListener("DOMContentLoaded", () => {
 buildEmptyTable();
-setInterval(() => { if (window.currentUserId) loadSchedule(); }, 60000);
 });
 </script>
 </body>
