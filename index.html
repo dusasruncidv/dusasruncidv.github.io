@@ -42,7 +42,19 @@ tbody tr:hover { background-color: var(--hover-bg); }
 .login-box button:disabled { opacity: 0.6; cursor: not-allowed; }
 .error-msg { color: #ef4444; font-size: 0.85rem; margin-top: 10px; display: none; }
 .loading-msg { color: #64748b; font-size: 0.85rem; margin-top: 10px; display: none; }
-@media (max-width: 768px) { html, body { height: 100%; overflow: hidden; } .table-container { flex: 1; min-height: 0; height: auto; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; touch-action: pan-y; overscroll-behavior-y: contain; } .topbar { flex-shrink: 0; justify-content: center; } .topbar > span:first-child { display: none; } .topbar-right { color: var(--topbar-text); font-size: 1.1rem; font-weight: 600; } table { table-layout: fixed; width: 100%; height: auto; } tr { height: 40px; } th:first-child, td:first-child { width: 80px; max-width: 80px; } th:not(:first-child), td:not(:first-child) { display: none; } th.is-today, td.is-today { display: table-cell !important; width: calc(100% - 80px); max-width: calc(100% - 80px); } }</style>
+@media (max-width: 768px) {
+html, body { height: 100%; min-height: 0; overflow: hidden; }
+.table-container { flex: 1 1 0; min-height: 0; height: 0; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch; touch-action: pan-y; overscroll-behavior-y: contain; padding-bottom: env(safe-area-inset-bottom); }
+.topbar { flex-shrink: 0; justify-content: center; }
+.topbar > span:first-child { display: none; }
+.topbar-right { color: var(--topbar-text); font-size: 1.1rem; font-weight: 600; }
+table { table-layout: fixed; width: 100%; height: auto; }
+tr { height: 40px; }
+th:first-child, td:first-child { width: 80px; max-width: 80px; }
+th:not(:first-child), td:not(:first-child) { display: none; }
+th.is-today, td.is-today { display: table-cell !important; width: calc(100% - 80px); max-width: calc(100% - 80px); }
+}
+</style>
 </head>
 <body>
 <div id="loginModal" class="login-modal">
