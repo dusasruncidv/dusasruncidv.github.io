@@ -7,12 +7,12 @@
 <style>
 :root { --bg-color: #f8fafc; --border-color: #e2e8f0; --header-bg: #f1f5f9; --header-text: #334155; --text-color: #0f172a; --topbar-bg: #1e293b; --topbar-text: #f8fafc; --focus-ring: #3b82f6; --sub-header-bg: #f8fafc; --hover-bg: #f1f5f9; }
 * { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden; background-color: var(--bg-color); color: var(--text-color); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; flex-direction: column; }
+html, body { margin: 0; padding: 0; width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; background-color: var(--bg-color); color: var(--text-color); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; flex-direction: column; }
 .topbar { height: 50px; background-color: var(--topbar-bg); color: var(--topbar-text); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; font-weight: 600; font-size: 1.1rem; letter-spacing: 0.025em; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
 .topbar-right { font-size: 0.95rem; font-weight: 500; color: #94a3b8; }
-.table-container { flex: 1; height: calc(100vh - 50px); overflow: auto; -webkit-overflow-scrolling: touch; }
-table { border-collapse: separate; border-spacing: 0; width: 100%; table-layout: fixed; background-color: #ffffff; }
-tr { height: 45px; }
+.table-container { flex: 1; min-height: 0; height: calc(100vh - 50px); height: calc(100dvh - 50px); overflow: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+table { border-collapse: separate; border-spacing: 0; width: 100%; height: 100%; table-layout: fixed; background-color: #ffffff; }
+tr { height: 3.125%; }
 th, td { border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 0; text-align: center; }
 th { background-color: var(--header-bg); font-weight: 600; color: var(--header-text); font-size: 0.9rem; }
 th:first-child, td:first-child { width: 100px; background-color: var(--header-bg); font-weight: 600; color: var(--header-text); font-size: 0.85rem; border-left: 1px solid var(--border-color); }
@@ -24,17 +24,17 @@ tbody tr:hover { background-color: var(--hover-bg); }
 .sub-header { display: flex; width: 100%; height: 100%; background-color: var(--header-bg); font-size: 0.9rem; font-weight: 600; color: var(--header-text); }
 .sub-name { width: 70%; min-width: 0; flex-shrink: 0; border-right: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; }
 .sub-room { width: 30%; min-width: 0; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-.cell-split { display: flex; width: 100%; max-width: 100%; height: 45px; cursor: pointer; transition: background-color 0.15s ease; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
-@media (hover: hover) { .cell-split.slot-available.is-selectable:not(.user-has-slot):hover { background-color: rgba(34, 197, 94, 0.45) !important; color: #ffffff; } .cell-split.slot-taken:hover { background-color: #9ca3af !important; color: #ffffff; } .cell-split.is-admin.slot-taken:hover { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; } .cell-split.slot-mine:hover { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; } }
-.cell-split.slot-available.is-selectable:not(.user-has-slot):active { background-color: rgba(34, 197, 94, 0.45) !important; color: #ffffff; }
-.cell-split.slot-taken:active { background-color: #9ca3af !important; color: #ffffff; }
-.cell-split.is-admin.slot-taken:active { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; }
-.cell-split.slot-mine:active { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; }
+.cell-split { display: flex; width: 100%; max-width: 100%; height: 100%; cursor: pointer; transition: background-color 0.15s ease; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+@media (hover: hover) { .cell-split.slot-available.is-selectable:not(.user-has-slot):not(.is-past):hover { background-color: rgba(34, 197, 94, 0.45) !important; color: #ffffff; } .cell-split.slot-taken:not(.is-past):hover { background-color: #9ca3af !important; color: #ffffff; } .cell-split.is-admin.slot-taken:not(.is-past):hover { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; } .cell-split.slot-mine:not(.is-past):hover { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; } }
+.cell-split.slot-available.is-selectable:not(.user-has-slot):not(.is-past):active { background-color: rgba(34, 197, 94, 0.45) !important; color: #ffffff; }
+.cell-split.slot-taken:not(.is-past):active { background-color: #9ca3af !important; color: #ffffff; }
+.cell-split.is-admin.slot-taken:not(.is-past):active { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; }
+.cell-split.slot-mine:not(.is-past):active { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; }
 .cell-split.slot-mine { background-color: rgba(239, 68, 68, 0.2) !important; }
-.cell-split:not(.is-selectable) { background-color: #f1f5f9 !important; color: #94a3b8; cursor: not-allowed; }
+.cell-split:not(.is-selectable), .cell-split.is-past { background-color: #f1f5f9 !important; color: #94a3b8; cursor: not-allowed; opacity: 0.6; }
 .cell-name { width: 70%; min-width: 0; flex-shrink: 0; border-right: 1px solid var(--border-color); height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: background-color 0.15s ease; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 4px; pointer-events: none; }
 .cell-room { width: 30%; min-width: 0; flex-shrink: 0; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: background-color 0.15s ease; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 4px; pointer-events: none; }
-.login-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(15, 23, 42, 0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+.login-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh; background-color: rgba(15, 23, 42, 0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; }
 .login-box { background: white; padding: 32px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 320px; text-align: center; }
 .login-box h2 { margin-top: 0; margin-bottom: 20px; color: var(--text-color); }
 .login-box input { width: 100%; padding: 10px; margin-bottom: 16px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 1rem; }
@@ -43,7 +43,7 @@ tbody tr:hover { background-color: var(--hover-bg); }
 .login-box button:disabled { opacity: 0.6; cursor: not-allowed; }
 .error-msg { color: #ef4444; font-size: 0.85rem; margin-top: 10px; display: none; }
 .loading-msg { color: #64748b; font-size: 0.85rem; margin-top: 10px; display: none; }
-@media (max-width: 768px) { .topbar { justify-content: center; } .topbar > span:first-child { display: none; } .topbar-right { color: var(--topbar-text); font-size: 1.1rem; font-weight: 600; } table { table-layout: fixed; width: 100%; } th:first-child, td:first-child { width: 80px; max-width: 80px; } th:not(:first-child), td:not(:first-child) { display: none; } th.is-today, td.is-today { display: table-cell !important; width: calc(100% - 80px); max-width: calc(100% - 80px); } }
+@media (max-width: 768px) { .topbar { justify-content: center; } .topbar > span:first-child { display: none; } .topbar-right { color: var(--topbar-text); font-size: 1.1rem; font-weight: 600; } .table-container { height: auto; } table { table-layout: fixed; width: 100%; height: auto; } tr { height: auto; } th, td { height: 52px; } th:first-child, td:first-child { width: 80px; max-width: 80px; } th:not(:first-child), td:not(:first-child) { display: none; } th.is-today, td.is-today { display: table-cell !important; width: calc(100% - 80px); max-width: calc(100% - 80px); } body { padding-bottom: env(safe-area-inset-bottom, 0px); } }
 </style>
 </head>
 <body>
@@ -51,7 +51,7 @@ tbody tr:hover { background-color: var(--hover-bg); }
 <div class="login-box">
 <h2>Dušu Saraksts</h2>
 <input type="password" id="passwordInput" placeholder="Parole" autocomplete="current-password">
-<button id="loginButton" onclick="login()">Ienākt</button>
+<button id="loginButton" onclick="Login()">Ienākt</button>
 <div id="loadingMsg" class="loading-msg">Pārbauda...</div>
 <div id="errorMsg" class="error-msg">Nepareiza parole!</div>
 </div>
@@ -68,290 +68,307 @@ tbody tr:hover { background-color: var(--hover-bg); }
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SUPABASE_URL = "https://xeglssmfqmpyxyyvtukt.supabase.co";
-const SUPABASE_KEY = "sb_publishable_GdbyhxPdUbLZXT9WpcobrA_Nvj5x-P_";
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-const times = ["15:30","15:45","16:00","16:15","16:30","16:45","17:00","17:15","17:30","17:45","18:00","18:15","18:30","18:45","19:00","19:15","19:30","19:45","20:00","20:15","20:30","20:45","21:00","21:15","21:30","21:45","22:00","22:15","22:30","22:45"];
-let activeDaysConfig = [];
-let realtimeChannel = null;
-function calculateActiveDays() {
-const now = new Date();
-const currentDayNum = now.getDay();
-const daysList = [
-{ name: "Pirmdiena", dayNum: 1 },
-{ name: "Otrdiena", dayNum: 2 },
-{ name: "Trešdiena", dayNum: 3 },
-{ name: "Ceturtdiena", dayNum: 4 },
-{ name: "Svētdiena", dayNum: 0 }
+// -- Services
+const SupabaseUrl = "https://xeglssmfqmpyxyyvtukt.supabase.co";
+const SupabaseKey = "sb_publishable_GdbyhxPdUbLZXT9WpcobrA_Nvj5x-P_";
+const SupabaseClient = window.supabase.createClient(SupabaseUrl, SupabaseKey);
+// -- Variables
+const Times = ["15:30","15:45","16:00","16:15","16:30","16:45","17:00","17:15","17:30","17:45","18:00","18:15","18:30","18:45","19:00","19:15","19:30","19:45","20:00","20:15","20:30","20:45","21:00","21:15","21:30","21:45","22:00","22:15","22:30","22:45"];
+let ActiveDaysConfig = [];
+let RealtimeChannel = null;
+// -- Functions
+function IsTimePast(TimeStr) {
+const Now = new Date();
+const [Hours, Minutes] = TimeStr.split(":").map(Number);
+const SlotTime = new Date(Now);
+SlotTime.setHours(Hours, Minutes, 0, 0);
+return Now > SlotTime;
+}
+function CalculateActiveDays() {
+const Now = new Date();
+const CurrentDayNum = Now.getDay();
+const DaysList = [
+{ Name: "Pirmdiena", DayNum: 1 },
+{ Name: "Otrdiena", DayNum: 2 },
+{ Name: "Trešdiena", DayNum: 3 },
+{ Name: "Ceturtdiena", DayNum: 4 },
+{ Name: "Svētdiena", DayNum: 0 }
 ];
-let active = [];
-if (currentDayNum === 5 || currentDayNum === 6 || currentDayNum === 0) {
-const sundayDate = new Date(now);
-let diffToSun = (0 - currentDayNum + 7) % 7;
-if (currentDayNum === 0) diffToSun = 0;
-sundayDate.setDate(now.getDate() + diffToSun);
-active.push({ name: "Svētdiena", date: sundayDate, dayNum: 0 });
-const nextMon = new Date(sundayDate);
-nextMon.setDate(sundayDate.getDate() + 1);
-active.push({ name: "Pirmdiena", date: nextMon, dayNum: 1 });
-const nextTue = new Date(sundayDate);
-nextTue.setDate(sundayDate.getDate() + 2);
-active.push({ name: "Otrdiena", date: nextTue, dayNum: 2 });
-const nextWed = new Date(sundayDate);
-nextWed.setDate(sundayDate.getDate() + 3);
-active.push({ name: "Trešdiena", date: nextWed, dayNum: 3 });
-const nextThu = new Date(sundayDate);
-nextThu.setDate(sundayDate.getDate() + 4);
-active.push({ name: "Ceturtdiena", date: nextThu, dayNum: 4 });
+let Active = [];
+if (CurrentDayNum === 5 || CurrentDayNum === 6 || CurrentDayNum === 0) {
+const SundayDate = new Date(Now);
+let DiffToSun = (0 - CurrentDayNum + 7) % 7;
+if (CurrentDayNum === 0) DiffToSun = 0;
+SundayDate.setDate(Now.getDate() + DiffToSun);
+Active.push({ Name: "Svētdiena", DayDate: SundayDate, DayNum: 0 });
+const NextMon = new Date(SundayDate);
+NextMon.setDate(SundayDate.getDate() + 1);
+Active.push({ Name: "Pirmdiena", DayDate: NextMon, DayNum: 1 });
+const NextTue = new Date(SundayDate);
+NextTue.setDate(SundayDate.getDate() + 2);
+Active.push({ Name: "Otrdiena", DayDate: NextTue, DayNum: 2 });
+const NextWed = new Date(SundayDate);
+NextWed.setDate(SundayDate.getDate() + 3);
+Active.push({ Name: "Trešdiena", DayDate: NextWed, DayNum: 3 });
+const NextThu = new Date(SundayDate);
+NextThu.setDate(SundayDate.getDate() + 4);
+Active.push({ Name: "Ceturtdiena", DayDate: NextThu, DayNum: 4 });
 } else {
-const todayIndex = daysList.findIndex(d => d.dayNum === currentDayNum);
-for (let i = todayIndex; i < daysList.length; i++) {
-const item = daysList[i];
-const date = new Date(now);
-date.setDate(now.getDate() + (item.dayNum - currentDayNum));
-active.push({ name: item.name, date: date, dayNum: item.dayNum });
+const TodayIndex = DaysList.findIndex(D => D.DayNum === CurrentDayNum);
+for (let I = TodayIndex; I < DaysList.length; I++) {
+const Item = DaysList[I];
+const DayDate = new Date(Now);
+DayDate.setDate(Now.getDate() + (Item.DayNum - CurrentDayNum));
+Active.push({ Name: Item.Name, DayDate: DayDate, DayNum: Item.DayNum });
 }
 }
-return active;
+return Active;
 }
-function formatDate(dateObj) {
-return `${String(dateObj.getDate()).padStart(2,"0")}.${String(dateObj.getMonth() + 1).padStart(2,"0")}`;
+function FormatDate(DateObj) {
+return `${String(DateObj.getDate()).padStart(2,"0")}.${String(DateObj.getMonth() + 1).padStart(2,"0")}`;
 }
-function buildTableHeader() {
-const header = document.getElementById("scheduleHeader");
-header.innerHTML = "";
-const tr1 = document.createElement("tr");
-const thDiena = document.createElement("th");
-thDiena.textContent = "Diena";
-tr1.appendChild(thDiena);
-activeDaysConfig.forEach((dayObj, index) => {
-const th = document.createElement("th");
-if (index === 0) th.classList.add("is-today");
-th.innerHTML = `<div class="day-header"><span class="day-name">${dayObj.name}</span><span class="day-date">${formatDate(dayObj.date)}</span></div>`;
-tr1.appendChild(th);
+function BuildTableHeader() {
+const Header = document.getElementById("scheduleHeader");
+Header.innerHTML = "";
+const Tr1 = document.createElement("tr");
+const ThDiena = document.createElement("th");
+ThDiena.textContent = "Diena";
+Tr1.appendChild(ThDiena);
+ActiveDaysConfig.forEach((DayObj, Index) => {
+const Th = document.createElement("th");
+if (Index === 0) Th.classList.add("is-today");
+Th.innerHTML = `<div class="day-header"><span class="day-name">${DayObj.Name}</span><span class="day-date">${FormatDate(DayObj.DayDate)}</span></div>`;
+Tr1.appendChild(Th);
 });
-const tr2 = document.createElement("tr");
-const thLaiks = document.createElement("th");
-thLaiks.textContent = "Laiks";
-tr2.appendChild(thLaiks);
-activeDaysConfig.forEach((dayObj, index) => {
-const th = document.createElement("th");
-if (index === 0) th.classList.add("is-today");
-th.innerHTML = `<div class="sub-header"><span class="sub-name">Vārds</span><span class="sub-room">Istaba</span></div>`;
-tr2.appendChild(th);
+const Tr2 = document.createElement("tr");
+const ThLaiks = document.createElement("th");
+ThLaiks.textContent = "Laiks";
+Tr2.appendChild(ThLaiks);
+ActiveDaysConfig.forEach((DayObj, Index) => {
+const Th = document.createElement("th");
+if (Index === 0) Th.classList.add("is-today");
+Th.innerHTML = `<div class="sub-header"><span class="sub-name">Vārds</span><span class="sub-room">Istaba</span></div>`;
+Tr2.appendChild(Th);
 });
-header.appendChild(tr1);
-header.appendChild(tr2);
+Header.appendChild(Tr1);
+Header.appendChild(Tr2);
 }
-function buildEmptyTable() {
-activeDaysConfig = calculateActiveDays();
-buildTableHeader();
-const body = document.getElementById("scheduleBody");
-body.innerHTML = "";
-for (const time of times) {
-const tr = document.createElement("tr");
-const timeCell = document.createElement("td");
-timeCell.textContent = time;
-tr.appendChild(timeCell);
-for (let i = 0; i < activeDaysConfig.length; i++) {
-const td = document.createElement("td");
-if (i === 0) td.classList.add("is-today");
-const split = document.createElement("div");
-split.className = "cell-split";
-split.addEventListener("click", (e) => handleSlotClick(e, split));
-const name = document.createElement("div");
-name.className = "cell-name";
-const room = document.createElement("div");
-room.className = "cell-room";
-split.appendChild(name);
-split.appendChild(room);
-td.appendChild(split);
-tr.appendChild(td);
+function BuildEmptyTable() {
+ActiveDaysConfig = CalculateActiveDays();
+BuildTableHeader();
+const Body = document.getElementById("scheduleBody");
+Body.innerHTML = "";
+for (const Time of Times) {
+const Tr = document.createElement("tr");
+const TimeCell = document.createElement("td");
+TimeCell.textContent = Time;
+Tr.appendChild(TimeCell);
+for (let I = 0; I < ActiveDaysConfig.length; I++) {
+const Td = document.createElement("td");
+if (I === 0) Td.classList.add("is-today");
+const Split = document.createElement("div");
+Split.className = "cell-split";
+Split.addEventListener("click", (E) => HandleSlotClick(E, Split));
+const NameEl = document.createElement("div");
+NameEl.className = "cell-name";
+const RoomEl = document.createElement("div");
+RoomEl.className = "cell-room";
+Split.appendChild(NameEl);
+Split.appendChild(RoomEl);
+Td.appendChild(Split);
+Tr.appendChild(Td);
 }
-body.appendChild(tr);
-}
-}
-function renderSchedule(schedule) {
-buildEmptyTable();
-const scheduleArray = Array.isArray(schedule) ? schedule : [];
-const scheduleMap = {};
-for (const item of scheduleArray) {
-if (item && item.day && item.time) {
-scheduleMap[`${item.day}_${item.time}`] = item;
+Body.appendChild(Tr);
 }
 }
-const currentUserId = Number(window.currentUserId);
-const tbody = document.getElementById("scheduleBody");
-const daysUserHasSlot = new Set();
-scheduleArray.forEach(item => {
-if (item && Number(item.user_id) === currentUserId && item.day) {
-daysUserHasSlot.add(item.day);
+function RenderSchedule(Schedule) {
+BuildEmptyTable();
+const ScheduleArray = Array.isArray(Schedule) ? Schedule : [];
+const ScheduleMap = {};
+for (const Item of ScheduleArray) {
+if (Item && Item.day && Item.time) {
+ScheduleMap[`${Item.day}_${Item.time}`] = Item;
+}
+}
+const CurrentUserId = Number(window.CurrentUserId);
+const Tbody = document.getElementById("scheduleBody");
+const DaysUserHasSlot = new Set();
+ScheduleArray.forEach(Item => {
+if (Item && Number(Item.user_id) === CurrentUserId && Item.day) {
+DaysUserHasSlot.add(Item.day);
 }
 });
-const now = new Date();
-const currentDayNum = now.getDay();
-const isFriOrSat = (currentDayNum === 5 || currentDayNum === 6);
-times.forEach((time, rowIndex) => {
-const row = tbody.children[rowIndex];
-if (!row) return;
-activeDaysConfig.forEach((dayObj, dayIndex) => {
-const cells = row.querySelectorAll(".cell-split");
-const cell = cells[dayIndex];
-if (!cell) return;
-const day = dayObj.name;
-cell.dataset.day = day;
-cell.dataset.time = time;
-const isSelectable = isFriOrSat ? (dayIndex === 0) : (dayIndex === 0 || dayIndex === 1);
-const item = scheduleMap[`${day}_${time}`];
-const nameEl = cell.querySelector(".cell-name");
-const roomEl = cell.querySelector(".cell-room");
-cell.classList.remove("slot-available", "slot-taken", "slot-mine", "user-has-slot", "is-day-today", "is-selectable", "is-admin");
-if (currentUserId === 1) {
-cell.classList.add("is-admin");
+const Now = new Date();
+const CurrentDayNum = Now.getDay();
+const IsFriOrSat = (CurrentDayNum === 5 || CurrentDayNum === 6);
+Times.forEach((Time, RowIndex) => {
+const Row = Tbody.children[RowIndex];
+if (!Row) return;
+ActiveDaysConfig.forEach((DayObj, DayIndex) => {
+const Cells = Row.querySelectorAll(".cell-split");
+const Cell = Cells[DayIndex];
+if (!Cell) return;
+const Day = DayObj.Name;
+Cell.dataset.day = Day;
+Cell.dataset.time = Time;
+const IsToday = DayIndex === 0;
+const IsPast = IsToday && IsTimePast(Time);
+const IsSelectable = IsFriOrSat ? (DayIndex === 0) : (DayIndex === 0 || DayIndex === 1);
+const Item = ScheduleMap[`${Day}_${Time}`];
+const NameEl = Cell.querySelector(".cell-name");
+const RoomEl = Cell.querySelector(".cell-room");
+Cell.classList.remove("slot-available", "slot-taken", "slot-mine", "user-has-slot", "is-day-today", "is-selectable", "is-admin", "is-past");
+if (CurrentUserId === 1) {
+Cell.classList.add("is-admin");
 }
-if (dayIndex === 0) {
-cell.classList.add("is-day-today");
+if (IsToday) {
+Cell.classList.add("is-day-today");
 }
-if (isSelectable) {
-cell.classList.add("is-selectable");
+if (IsPast) {
+Cell.classList.add("is-past");
 }
-if (daysUserHasSlot.has(day)) {
-cell.classList.add("user-has-slot");
+if (IsSelectable) {
+Cell.classList.add("is-selectable");
 }
-if (item) {
-cell.dataset.scheduleId = item.id;
-cell.dataset.userId = item.user_id || "";
-nameEl.textContent = typeof item.name === "string" ? item.name : "";
-roomEl.textContent = typeof item.room === "string" ? item.room : "";
-if (Number(item.user_id) === currentUserId) {
-cell.classList.add("slot-mine");
+if (DaysUserHasSlot.has(Day)) {
+Cell.classList.add("user-has-slot");
+}
+if (Item) {
+Cell.dataset.scheduleId = Item.id;
+Cell.dataset.userId = Item.user_id || "";
+NameEl.textContent = typeof Item.name === "string" ? Item.name : "";
+RoomEl.textContent = typeof Item.room === "string" ? Item.room : "";
+if (Number(Item.user_id) === CurrentUserId) {
+Cell.classList.add("slot-mine");
 } else {
-cell.classList.add("slot-taken");
+Cell.classList.add("slot-taken");
 }
 } else {
-cell.dataset.scheduleId = "";
-cell.dataset.userId = "";
-nameEl.textContent = "";
-roomEl.textContent = "";
-cell.classList.add("slot-available");
+Cell.dataset.scheduleId = "";
+Cell.dataset.userId = "";
+NameEl.textContent = "";
+RoomEl.textContent = "";
+Cell.classList.add("slot-available");
 }
 });
 });
 }
-async function handleSlotClick(e, cell) {
-if (e) e.stopPropagation();
-if (!window.currentUserId) return;
-const day = cell.dataset.day;
-const time = cell.dataset.time;
-const dayIndex = activeDaysConfig.findIndex(d => d.name === day);
-const now = new Date();
-const currentDayNum = now.getDay();
-const isFriOrSat = (currentDayNum === 5 || currentDayNum === 6);
-const maxSelectableIndex = isFriOrSat ? 0 : 1;
-if (dayIndex > maxSelectableIndex) {
+async function HandleSlotClick(E, Cell) {
+if (E) E.stopPropagation();
+if (!window.CurrentUserId) return;
+if (Cell.classList.contains("is-past")) return;
+const Day = Cell.dataset.day;
+const Time = Cell.dataset.time;
+const DayIndex = ActiveDaysConfig.findIndex(D => D.Name === Day);
+const Now = new Date();
+const CurrentDayNum = Now.getDay();
+const IsFriOrSat = (CurrentDayNum === 5 || CurrentDayNum === 6);
+const MaxSelectableIndex = IsFriOrSat ? 0 : 1;
+if (DayIndex > MaxSelectableIndex) {
 return;
 }
-const isMine = cell.classList.contains("slot-mine");
-const isAvailable = cell.classList.contains("slot-available");
-const isAdmin = window.currentUserId === 1;
-if (isAdmin && isAvailable) return;
-if (!isAdmin) {
-if (!isAvailable && !isMine) return;
-if (isAvailable) {
-const existingUserSlots = document.querySelectorAll(`.cell-split.slot-mine[data-day="${day}"]`);
-if (existingUserSlots.length > 0) {
+const IsMine = Cell.classList.contains("slot-mine");
+const IsAvailable = Cell.classList.contains("slot-available");
+const IsAdmin = window.CurrentUserId === 1;
+if (IsAdmin && IsAvailable) return;
+if (!IsAdmin) {
+if (!IsAvailable && !IsMine) return;
+if (IsAvailable) {
+const ExistingUserSlots = document.querySelectorAll(`.cell-split.slot-mine[data-day="${Day}"]`);
+if (ExistingUserSlots.length > 0) {
 return;
 }
 }
 }
 try {
-const response = await fetch(`${SUPABASE_URL}/functions/v1/toggle-slot`, {
+const Response = await fetch(`${SupabaseUrl}/functions/v1/toggle-slot`, {
 method: "POST",
 headers: {
 "Content-Type": "application/json",
-"apikey": SUPABASE_KEY
+"apikey": SupabaseKey
 },
 body: JSON.stringify({
-day: day,
-time: time,
-userId: window.currentUserId
+day: Day,
+time: Time,
+userId: window.CurrentUserId
 })
 });
-const result = await response.json();
-if (!response.ok || !result.success) {
+const Result = await Response.json();
+if (!Response.ok || !Result.success) {
 return;
 }
-} catch (err) {
-console.error("Slot toggle error:", err);
+} catch (Failure) {
+console.error("Slot toggle error:", Failure);
 }
 }
-function subscribeToScheduleChanges() {
-if (realtimeChannel) return;
-reallandChannel = supabaseClient
+function SubscribeToScheduleChanges() {
+if (RealtimeChannel) return;
+RealtimeChannel = SupabaseClient
 .channel("schedule-db-changes")
 .on(
 "postgres_changes",
 { event: "*", schema: "public", table: "schedule" },
 () => {
-loadSchedule();
+LoadSchedule();
 }
 )
 .subscribe();
 }
-async function loadSchedule() {
-const { data, error } = await supabaseClient.from("schedule").select("id,day,time,name,room,user_id").order("time", { ascending: true });
-if (error) throw error;
-renderSchedule(data);
+async function LoadSchedule() {
+const { data: Data, error: Err } = await SupabaseClient.from("schedule").select("id,day,time,name,room,user_id").order("time", { ascending: true });
+if (Err) throw Err;
+RenderSchedule(Data);
 }
-async function login() {
-const passwordInput = document.getElementById("passwordInput");
-const loginButton = document.getElementById("loginButton");
-const errorMsg = document.getElementById("errorMsg");
-const loadingMsg = document.getElementById("loadingMsg");
-errorMsg.style.display = "none";
-loadingMsg.style.display = "block";
-loginButton.disabled = true;
+async function Login() {
+const PasswordInput = document.getElementById("passwordInput");
+const LoginButton = document.getElementById("loginButton");
+const ErrorMsg = document.getElementById("errorMsg");
+const LoadingMsg = document.getElementById("loadingMsg");
+ErrorMsg.style.display = "none";
+LoadingMsg.style.display = "block";
+LoginButton.disabled = true;
 try {
-const response = await fetch(`${SUPABASE_URL}/functions/v1/login`, {
+const Response = await fetch(`${SupabaseUrl}/functions/v1/login`, {
 method: "POST",
-graphql: false,
 headers: {
 "Content-Type": "application/json",
-"apikey": SUPABASE_KEY
+"apikey": SupabaseKey
 },
 body: JSON.stringify({
-password: passwordInput.value
+password: PasswordInput.value
 })
 });
-const responseText = await response.text();
-let result;
+const ResponseText = await Response.text();
+let Result;
 try {
-result = JSON.parse(responseText);
+Result = JSON.parse(ResponseText);
 } catch {
-throw new Error(`Server returned invalid JSON: ${responseText}`);
+throw new Error(`Server returned invalid JSON: ${ResponseText}`);
 }
-if (!response.ok || !result.success) throw new Error(result.error || result.message || `Login failed (${response.status})`);
-window.currentUserId = Number(result.user.id);
-sessionStorage.setItem("scheduleToken", result.token);
-document.getElementById("userInfo").textContent = result.user.name && result.user.room ? `${result.user.name} ${result.user.room}` : result.user.name;
-await loadSchedule();
-subscribeToScheduleChanges();
+if (!Response.ok || !Result.success) throw new Error(Result.error || Result.message || `Login failed (${Response.status})`);
+window.CurrentUserId = Number(Result.user.id);
+sessionStorage.setItem("scheduleToken", Result.token);
+document.getElementById("userInfo").textContent = Result.user.name && Result.user.room ? `${Result.user.name} ${Result.user.room}` : Result.user.name;
+await LoadSchedule();
+SubscribeToScheduleChanges();
 document.getElementById("loginModal").style.display = "none";
-} catch (error) {
-console.error("Login error:", error);
-passwordInput.value = "";
-errorMsg.textContent = error.message;
-errorMsg.style.display = "block";
+} catch (Failure) {
+console.error("Login error:", Failure);
+PasswordInput.value = "";
+ErrorMsg.textContent = Failure.message;
+ErrorMsg.style.display = "block";
 } finally {
-loadingMsg.style.display = "none";
-loginButton.disabled = false;
+LoadingMsg.style.display = "none";
+LoginButton.disabled = false;
 }
 }
-document.getElementById("passwordInput").addEventListener("keydown", event => {
-if (event.key === "Enter") login();
+// -- Events
+document.getElementById("passwordInput").addEventListener("keydown", KeyEvent => {
+if (KeyEvent.key === "Enter") Login();
 });
 window.addEventListener("DOMContentLoaded", () => {
-buildEmptyTable();
+BuildEmptyTable();
+setInterval(() => { if (window.CurrentUserId) LoadSchedule(); }, 60000);
 });
 </script>
 </body>
