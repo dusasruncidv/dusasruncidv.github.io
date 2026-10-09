@@ -8,11 +8,11 @@
 :root { --bg-color: #f8fafc; --border-color: #e2e8f0; --header-bg: #f1f5f9; --header-text: #334155; --text-color: #0f172a; --topbar-bg: #1e293b; --topbar-text: #f8fafc; --focus-ring: #3b82f6; --sub-header-bg: #f8fafc; --hover-bg: #f1f5f9; }
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden; background-color: var(--bg-color); color: var(--text-color); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; flex-direction: column; }
-.topbar { height: 50px; background-color: var(--topbar-bg); color: var(--topbar-text); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; font-weight: 600; font-size: 1.1rem; letter-spacing: 0.025em; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); flex-shrink: 0; }
+.topbar { height: 50px; background-color: var(--topbar-bg); color: var(--topbar-text); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; font-weight: 600; font-size: 1.1rem; letter-spacing: 0.025em; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
 .topbar-right { font-size: 0.95rem; font-weight: 500; color: #94a3b8; }
-.table-container { flex: 1; height: calc(100vh - 50px); overflow: auto; }
-table { border-collapse: separate; border-spacing: 0; width: 100%; height: 100%; table-layout: fixed; background-color: #ffffff; }
-tr { height: 3.125%; }
+.table-container { flex: 1; height: calc(100vh - 50px); overflow: auto; -webkit-overflow-scrolling: touch; }
+table { border-collapse: separate; border-spacing: 0; width: 100%; table-layout: fixed; background-color: #ffffff; }
+tr { height: 45px; }
 th, td { border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 0; text-align: center; }
 th { background-color: var(--header-bg); font-weight: 600; color: var(--header-text); font-size: 0.9rem; }
 th:first-child, td:first-child { width: 100px; background-color: var(--header-bg); font-weight: 600; color: var(--header-text); font-size: 0.85rem; border-left: 1px solid var(--border-color); }
@@ -24,7 +24,7 @@ tbody tr:hover { background-color: var(--hover-bg); }
 .sub-header { display: flex; width: 100%; height: 100%; background-color: var(--header-bg); font-size: 0.9rem; font-weight: 600; color: var(--header-text); }
 .sub-name { width: 70%; min-width: 0; flex-shrink: 0; border-right: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; }
 .sub-room { width: 30%; min-width: 0; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-.cell-split { display: flex; width: 100%; max-width: 100%; height: 100%; cursor: pointer; transition: background-color 0.15s ease; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.cell-split { display: flex; width: 100%; max-width: 100%; height: 45px; cursor: pointer; transition: background-color 0.15s ease; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 @media (hover: hover) { .cell-split.slot-available.is-selectable:not(.user-has-slot):hover { background-color: rgba(34, 197, 94, 0.45) !important; color: #ffffff; } .cell-split.slot-taken:hover { background-color: #9ca3af !important; color: #ffffff; } .cell-split.is-admin.slot-taken:hover { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; } .cell-split.slot-mine:hover { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; } }
 .cell-split.slot-available.is-selectable:not(.user-has-slot):active { background-color: rgba(34, 197, 94, 0.45) !important; color: #ffffff; }
 .cell-split.slot-taken:active { background-color: #9ca3af !important; color: #ffffff; }
@@ -43,7 +43,7 @@ tbody tr:hover { background-color: var(--hover-bg); }
 .login-box button:disabled { opacity: 0.6; cursor: not-allowed; }
 .error-msg { color: #ef4444; font-size: 0.85rem; margin-top: 10px; display: none; }
 .loading-msg { color: #64748b; font-size: 0.85rem; margin-top: 10px; display: none; }
-@media (max-width: 768px) { .topbar { justify-content: center; } .topbar > span:first-child { display: none; } .topbar-right { color: var(--topbar-text); font-size: 1.1rem; font-weight: 600; } table { table-layout: auto; height: auto; } tr { height: auto; } th, td { height: 44px; } th:first-child, td:first-child { width: 70px; max-width: 70px; } th:not(:first-child), td:not(:first-child) { display: none; } th.is-today, td.is-today { display: table-cell !important; width: calc(100% - 70px); max-width: calc(100% - 70px); } }
+@media (max-width: 768px) { .topbar { justify-content: center; } .topbar > span:first-child { display: none; } .topbar-right { color: var(--topbar-text); font-size: 1.1rem; font-weight: 600; } table { table-layout: fixed; width: 100%; } th:first-child, td:first-child { width: 80px; max-width: 80px; } th:not(:first-child), td:not(:first-child) { display: none; } th.is-today, td.is-today { display: table-cell !important; width: calc(100% - 80px); max-width: calc(100% - 80px); } }
 </style>
 </head>
 <body>
@@ -74,7 +74,6 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const times = ["15:30","15:45","16:00","16:15","16:30","16:45","17:00","17:15","17:30","17:45","18:00","18:15","18:30","18:45","19:00","19:15","19:30","19:45","20:00","20:15","20:30","20:45","21:00","21:15","21:30","21:45","22:00","22:15","22:30","22:45"];
 let activeDaysConfig = [];
 let realtimeChannel = null;
-
 function calculateActiveDays() {
 const now = new Date();
 const currentDayNum = now.getDay();
@@ -115,11 +114,9 @@ active.push({ name: item.name, date: date, dayNum: item.dayNum });
 }
 return active;
 }
-
 function formatDate(dateObj) {
 return `${String(dateObj.getDate()).padStart(2,"0")}.${String(dateObj.getMonth() + 1).padStart(2,"0")}`;
 }
-
 function buildTableHeader() {
 const header = document.getElementById("scheduleHeader");
 header.innerHTML = "";
@@ -146,7 +143,6 @@ tr2.appendChild(th);
 header.appendChild(tr1);
 header.appendChild(tr2);
 }
-
 function buildEmptyTable() {
 activeDaysConfig = calculateActiveDays();
 buildTableHeader();
@@ -175,7 +171,6 @@ tr.appendChild(td);
 body.appendChild(tr);
 }
 }
-
 function renderSchedule(schedule) {
 buildEmptyTable();
 const scheduleArray = Array.isArray(schedule) ? schedule : [];
@@ -243,7 +238,6 @@ cell.classList.add("slot-available");
 });
 });
 }
-
 async function handleSlotClick(e, cell) {
 if (e) e.stopPropagation();
 if (!window.currentUserId) return;
@@ -291,10 +285,9 @@ return;
 console.error("Slot toggle error:", err);
 }
 }
-
 function subscribeToScheduleChanges() {
 if (realtimeChannel) return;
-realtimeChannel = supabaseClient
+reallandChannel = supabaseClient
 .channel("schedule-db-changes")
 .on(
 "postgres_changes",
@@ -305,13 +298,11 @@ loadSchedule();
 )
 .subscribe();
 }
-
 async function loadSchedule() {
 const { data, error } = await supabaseClient.from("schedule").select("id,day,time,name,room,user_id").order("time", { ascending: true });
 if (error) throw error;
 renderSchedule(data);
 }
-
 async function login() {
 const passwordInput = document.getElementById("passwordInput");
 const loginButton = document.getElementById("loginButton");
@@ -323,6 +314,7 @@ loginButton.disabled = true;
 try {
 const response = await fetch(`${SUPABASE_URL}/functions/v1/login`, {
 method: "POST",
+graphql: false,
 headers: {
 "Content-Type": "application/json",
 "apikey": SUPABASE_KEY
@@ -355,7 +347,6 @@ loadingMsg.style.display = "none";
 loginButton.disabled = false;
 }
 }
-
 document.getElementById("passwordInput").addEventListener("keydown", event => {
 if (event.key === "Enter") login();
 });
