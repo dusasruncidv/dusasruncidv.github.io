@@ -43,7 +43,8 @@ tbody tr:hover { background-color: var(--hover-bg); }
 .login-box button:disabled { opacity: 0.6; cursor: not-allowed; }
 .error-msg { color: #ef4444; font-size: 0.85rem; margin-top: 10px; display: none; }
 .loading-msg { color: #64748b; font-size: 0.85rem; margin-top: 10px; display: none; }
-@media (max-width: 768px) { .topbar { justify-content: center; } .topbar > span:first-child { display: none; } .topbar-right { color: var(--topbar-text); font-size: 1.1rem; font-weight: 600; } .table-container { height: auto; } table { table-layout: fixed; width: 100%; height: auto; } tr { height: auto; } th, td { height: 52px; } th:first-child, td:first-child { width: 80px; max-width: 80px; } th:not(:first-child), td:not(:first-child) { display: none; } th.is-today, td.is-today { display: table-cell !important; width: calc(100% - 80px); max-width: calc(100% - 80px); } body { padding-bottom: env(safe-area-inset-bottom, 0px); } }
+.mobile-nav-arrows { display: none; background: none; border: none; color: var(--topbar-text); font-size: 1.2rem; cursor: pointer; padding: 4px 8px; }
+@media (max-width: 768px) { .topbar { justify-content: space-between; padding: 0 12px; } .topbar > span:first-child { display: none; } .topbar-right { color: var(--topbar-text); font-size: 1rem; font-weight: 600; } .mobile-nav-arrows { display: inline-block; } .table-container { height: auto; } table { table-layout: fixed; width: 100%; height: auto; } tr { height: auto; } th, td { height: 52px; } th:first-child, td:first-child { width: 80px; max-width: 80px; } th:not(:first-child), td:not(:first-child) { display: none; } th.is-mobile-active, td.is-mobile-active { display: table-cell !important; width: calc(100% - 80px); max-width: calc(100% - 80px); } body { padding-bottom: env(safe-area-inset-bottom, 0px); } }
 </style>
 </head>
 <body>
@@ -57,8 +58,10 @@ tbody tr:hover { background-color: var(--hover-bg); }
 </div>
 </div>
 <div class="topbar">
+<button class="mobile-nav-arrows" id="prevDayBtn" onclick="ChangeMobileDay(-1)">&#9664;</button>
 <span>Upes Prospekts 18</span>
 <span id="userInfo" class="topbar-right"></span>
+<button class="mobile-nav-arrows" id="nextDayBtn" onclick="ChangeMobileDay(1)">&#9654;</button>
 </div>
 <div class="table-container">
 <table>
@@ -68,15 +71,13 @@ tbody tr:hover { background-color: var(--hover-bg); }
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// -- Services
 const SupabaseUrl = "https://xeglssmfqmpyxyyvtukt.supabase.co";
 const SupabaseKey = "sb_publishable_GdbyhxPdUbLZXT9WpcobrA_Nvj5x-P_";
 const SupabaseClient = window.supabase.createClient(SupabaseUrl, SupabaseKey);
-// -- Variables
 const Times = ["15:30","15:45","16:00","16:15","16:30","16:45","17:00","17:15","17:30","17:45","18:00","18:15","18:30","18:45","19:00","19:15","19:30","19:45","20:00","20:15","20:30","20:45","21:00","21:15","21:30","21:45","22:00","22:15","22:30","22:45"];
 let ActiveDaysConfig = [];
 let RealtimeChannel = null;
-// -- Functions
+let CurrentMobileDayIndex = 0;
 function IsTimePast(TimeStr) {
 const Now = new Date();
 const [Hours, Minutes] = TimeStr.split(":").map(Number);
@@ -137,6 +138,7 @@ Tr1.appendChild(ThDiena);
 ActiveDaysConfig.forEach((DayObj, Index) => {
 const Th = document.createElement("th");
 if (Index === 0) Th.classList.add("is-today");
+if (Index === CurrentMobileDayIndex) Th.classList.add("is-mobile-active");
 Th.innerHTML = `<div class="day-header"><span class="day-name">${DayObj.Name}</span><span class="day-date">${FormatDate(DayObj.DayDate)}</span></div>`;
 Tr1.appendChild(Th);
 });
@@ -147,14 +149,54 @@ Tr2.appendChild(ThLaiks);
 ActiveDaysConfig.forEach((DayObj, Index) => {
 const Th = document.createElement("th");
 if (Index === 0) Th.classList.add("is-today");
+if (Index === CurrentMobileDayIndex) Th.classList.add("is-mobile-active");
 Th.innerHTML = `<div class="sub-header"><span class="sub-name">Vārds</span><span class="sub-room">Istaba</span></div>`;
 Tr2.appendChild(Th);
 });
 Header.appendChild(Tr1);
 Header.appendChild(Tr2);
+UpdateMobileArrowsState();
+}
+function UpdateMobileArrowsState() {
+const PrevBtn = document.getElementById("prevDayBtn");
+const NextBtn = document.getElementById("nextDayBtn");
+if (PrevBtn && NextBtn) {
+PrevBtn.style.visibility = CurrentMobileDayIndex > 0 ? "visible" : "hidden";
+NextBtn.style.visibility = CurrentMobileDayIndex < ActiveDaysConfig.length - 1 ? "visible" : "hidden";
+}
+}
+function ChangeMobileDay(Direction) {
+const NewIndex = CurrentMobileDayIndex + Direction;
+if (NewIndex >= 0 && NewIndex < ActiveDaysConfig.length) {
+CurrentMobileDayIndex = NewIndex;
+const Header = document.getElementById("scheduleHeader");
+const Tbody = document.getElementById("scheduleBody");
+const AllThs = Header.querySelectorAll("th");
+AllThs.forEach(Th => Th.classList.remove("is-mobile-active"));
+const AllTrs = Tbody.querySelectorAll("tr");
+AllTrs.forEach(Tr => {
+const Tds = Tr.querySelectorAll("td");
+Tds.forEach((Td, ColIdx) => {
+Td.classList.remove("is-mobile-active");
+if (ColIdx === CurrentMobileDayIndex + 1) {
+Td.classList.add("is-mobile-active");
+}
+});
+});
+ActiveDaysConfig.forEach((_, ColIdx) => {
+if (ColIdx === CurrentMobileDayIndex) {
+const ColThs = Header.querySelectorAll(`tr th:nth-child(${ColIdx + 2})`);
+ColThs.forEach(Th => Th.classList.add("is-mobile-active"));
+}
+});
+UpdateMobileArrowsState();
+}
 }
 function BuildEmptyTable() {
 ActiveDaysConfig = CalculateActiveDays();
+if (CurrentMobileDayIndex >= ActiveDaysConfig.length) {
+CurrentMobileDayIndex = 0;
+}
 BuildTableHeader();
 const Body = document.getElementById("scheduleBody");
 Body.innerHTML = "";
@@ -166,6 +208,7 @@ Tr.appendChild(TimeCell);
 for (let I = 0; I < ActiveDaysConfig.length; I++) {
 const Td = document.createElement("td");
 if (I === 0) Td.classList.add("is-today");
+if (I === CurrentMobileDayIndex) Td.classList.add("is-mobile-active");
 const Split = document.createElement("div");
 Split.className = "cell-split";
 Split.addEventListener("click", (E) => HandleSlotClick(E, Split));
@@ -180,6 +223,7 @@ Tr.appendChild(Td);
 }
 Body.appendChild(Tr);
 }
+UpdateMobileArrowsState();
 }
 function RenderSchedule(Schedule) {
 BuildEmptyTable();
@@ -362,7 +406,6 @@ LoadingMsg.style.display = "none";
 LoginButton.disabled = false;
 }
 }
-// -- Events
 document.getElementById("passwordInput").addEventListener("keydown", KeyEvent => {
 if (KeyEvent.key === "Enter") Login();
 });
