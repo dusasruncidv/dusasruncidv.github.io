@@ -46,6 +46,7 @@ tbody tr:hover{background-color:var(--hover-bg);}
 .error-msg{color:#ef4444;font-size:0.85rem;margin-top:10px;display:none;}
 .loading-msg{color:#64748b;font-size:0.85rem;margin-top:10px;display:none;}
 .mobile-nav-arrows{display:none;background:none;border:none;color:var(--topbar-text);font-size:1.2rem;cursor:pointer;padding:4px 8px;}
+.extra-slot-input{width:100%;height:100%;border:none;background:transparent;text-align:center;font-size:0.9rem;color:var(--text-color);outline:none;}
 @media(max-width:768px){.topbar{justify-content:space-between;padding:0 12px;}.topbar>span:nth-child(2){display:none;}.topbar-right{color:var(--topbar-text);font-size:1rem;font-weight:600;}.mobile-nav-arrows{display:inline-block;}.table-container{height:auto;}table{table-layout:fixed;width:100%;height:auto;}tr{height:auto;}th,td{height:52px;}th:first-child,td:first-child{width:80px;max-width:80px;}th:not(:first-child),td:not(:first-child){display:none;}th.is-mobile-active,td.is-mobile-active{display:table-cell!important;width:calc(100% - 80px);max-width:calc(100% - 80px);}body{padding-bottom:env(safe-area-inset-bottom,0px);}}
 </style>
 </head>
@@ -195,11 +196,16 @@ CurrentMobileDayIndex = 0;
 BuildTableHeader();
 const Body = document.getElementById("scheduleBody");
 Body.innerHTML = "";
-for (const Time of Times) {
+let AllTimesToRender = [...Times];
+if (window.CurrentUserId === 1) {
+AllTimesToRender.push("Ekstra 1", "Ekstra 2", "Ekstra 3");
+}
+for (const Time of AllTimesToRender) {
 const Tr = document.createElement("tr");
 const TimeCell = document.createElement("td");
 TimeCell.textContent = Time;
 Tr.appendChild(TimeCell);
+const IsExtraRow = Time.startsWith("Ekstra");
 for (let I = 0; I < ActiveDaysConfig.length; I++) {
 const Td = document.createElement("td");
 const DayObj = ActiveDaysConfig[I];
@@ -209,6 +215,38 @@ if (DayObj.DayNum === CurrentDayNum) {
 Td.classList.add("is-today");
 }
 if (I === CurrentMobileDayIndex) Td.classList.add("is-mobile-active");
+if (IsExtraRow) {
+const Input = document.createElement("input");
+Input.type = "text";
+Input.className = "extra-slot-input";
+Input.dataset.day = DayObj.Name;
+Input.dataset.time = Time;
+Input.addEventListener("change", async () => {
+if (window.CurrentUserId !== 1) return;
+try {
+const Response = await fetch(`${SupabaseUrl}/functions/v1/save-extra`, {
+method: "POST",
+headers: {
+"Content-Type": "application/json",
+"apikey": SupabaseKey
+},
+body: JSON.stringify({
+day: DayObj.Name,
+time: Time,
+value: Input.value,
+userId: window.CurrentUserId
+})
+});
+const Result = await Response.json();
+if (!Response.ok || !Result.success) {
+console.error("Failed to save extra");
+}
+} catch (Err) {
+console.error("Extra save error:", Err);
+}
+});
+Td.appendChild(Input);
+} else {
 const Split = document.createElement("div");
 Split.className = "cell-split";
 Split.addEventListener("click", (E) => HandleSlotClick(E, Split));
@@ -219,6 +257,7 @@ RoomEl.className = "cell-room";
 Split.appendChild(NameEl);
 Split.appendChild(RoomEl);
 Td.appendChild(Split);
+}
 Tr.appendChild(Td);
 }
 Body.appendChild(Tr);
@@ -234,6 +273,13 @@ if (Item && Item.day && Item.time) {
 ScheduleMap[`${Item.day}_${Item.time}`] = Item;
 }
 }
+const ExtraInputs = document.querySelectorAll(".extra-slot-input");
+ExtraInputs.forEach(Input => {
+const Day = Input.dataset.day;
+const Time = Input.dataset.time;
+const Item = ScheduleMap[`${Day}_${Time}`];
+Input.value = Item && typeof Item.name === "string" ? Item.name : "";
+});
 const CurrentUserId = Number(window.CurrentUserId);
 const Tbody = document.getElementById("scheduleBody");
 const DaysUserHasSlot = new Set();
@@ -244,9 +290,14 @@ DaysUserHasSlot.add(Item.day);
 });
 const Now = new Date();
 const CurrentDayNum = Now.getDay();
-Times.forEach((Time, RowIndex) => {
+let AllTimesToRender = [...Times];
+if (CurrentUserId === 1) {
+AllTimesToRender.push("Pēc 23:00 1", "Pēc 23:00 2", "Pēc 23:00 3");
+}
+AllTimesToRender.forEach((Time, RowIndex) => {
 const Row = Tbody.children[RowIndex];
 if (!Row) return;
+if (Time.startsWith("Pēc 23:00")) return;
 ActiveDaysConfig.forEach((DayObj, DayIndex) => {
 const Cells = Row.querySelectorAll(".cell-split");
 const Cell = Cells[DayIndex];
