@@ -5,7 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dušu Saraksts</title>
 <style>
-:root{--bg-color:#f8fafc;--border-color:#e2e8f0;--header-bg:#f1f5f9;--header-text:#334155;--text-color:#0f172a;--topbar-bg:#1e293b;--topbar-text:#f8fafc;--focus-ring:#3b82f6;--sub-header-bg:#f8fafc;--hover-bg:#f1f5f9;}
+:root{
+  --bg-color:#f8fafc;
+  --border-color:#e2e8f0;
+  --header-bg:#f1f5f9;
+  --header-text:#334155;
+  --text-color:#0f172a;
+  --topbar-bg:#1e293b;
+  --topbar-text:#f8fafc;
+  --focus-ring:#3b82f6;
+  --sub-header-bg:#f8fafc;
+  --hover-bg:#f1f5f9;
+}
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;width:100vw;height:100vh;height:100dvh;overflow:hidden;background-color:var(--bg-color);color:var(--text-color);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;display:flex;flex-direction:column;}
 .topbar{height:50px;background-color:var(--topbar-bg);color:var(--topbar-text);border-bottom:1px solid var(--border-color);display:flex;align-items:center;justify-content:space-between;padding:0 24px;font-weight:600;font-size:1.1rem;letter-spacing:0.025em;box-shadow:0 1px 3px rgba(0,0,0,0.1);}
@@ -25,12 +36,14 @@ tbody tr:hover{background-color:var(--hover-bg);}
 .sub-name{width:70%;min-width:0;flex-shrink:0;border-right:1px solid var(--border-color);display:flex;align-items:center;justify-content:center;}
 .sub-room{width:30%;min-width:0;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
 .cell-split{display:flex;width:100%;max-width:100%;height:100%;cursor:pointer;transition:background-color 0.15s ease;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
-@media(hover:hover){.cell-split.slot-available.is-selectable:not(.user-has-slot):not(.is-past):hover{background-color:rgba(34,197,94,0.45)!important;color:#ffffff;}.cell-split.slot-taken:not(.is-past):hover{background-color:#9ca3af!important;color:#ffffff;}.cell-split.is-admin.slot-taken:not(.is-past):hover{background-color:rgba(239,68,68,0.45)!important;color:#ffffff;}.cell-split.slot-mine:not(.is-past):hover{background-color:rgba(239,68,68,0.45)!important;color:#ffffff;}}
+@media(hover:hover){.cell-split.slot-available.is-selectable:not(.user-has-slot):not(.is-past):hover{background-color:rgba(34,197,94,0.45)!important;color:#ffffff;}.cell-split.slot-taken:not(.is-past):hover{background-color:#9ca3af!important;color:#ffffff;}.cell-split.is-admin.slot-taken:not(.is-past):hover{background-color:rgba(239,68,68,0.45)!important;color:#ffffff;}.cell-split.slot-mine:not(.is-past):hover{background-color:rgba(239,68,68,0.45)!important;color:#ffffff;}.cell-split.slot-roommate:not(.is-past):hover{background-color:rgba(59,130,246,0.45)!important;color:#ffffff;}}
 .cell-split.slot-available.is-selectable:not(.user-has-slot):not(.is-past):active{background-color:rgba(34,197,94,0.45)!important;color:#ffffff;}
 .cell-split.slot-taken:not(.is-past):active{background-color:#9ca3af!important;color:#ffffff;}
 .cell-split.is-admin.slot-taken:not(.is-past):active{background-color:rgba(239,68,68,0.45)!important;color:#ffffff;}
 .cell-split.slot-mine:not(.is-past):active{background-color:rgba(239,68,68,0.45)!important;color:#ffffff;}
+.cell-split.slot-roommate:not(.is-past):active{background-color:rgba(59,130,246,0.45)!important;color:#ffffff;}
 .cell-split.slot-mine{background-color:rgba(239,68,68,0.2)!important;}
+.cell-split.slot-roommate{background-color:rgba(59,130,246,0.2)!important;}
 .cell-split:not(.is-selectable),.cell-split.is-past{background-color:#f1f5f9!important;color:#94a3b8;cursor:not-allowed;opacity:0.6;}
 .cell-name{width:70%;min-width:0;flex-shrink:0;border-right:1px solid var(--border-color);height:100%;display:flex;align-items:center;justify-content:center;font-size:0.9rem;transition:background-color 0.15s ease;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 4px;pointer-events:none;}
 .cell-room{width:30%;min-width:0;flex-shrink:0;height:100%;display:flex;align-items:center;justify-content:center;font-size:0.9rem;transition:background-color 0.15s ease;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 4px;pointer-events:none;}
@@ -219,31 +232,10 @@ if (IsExtraRow) {
 const Input = document.createElement("input");
 Input.type = "text";
 Input.className = "extra-slot-input";
-Input.dataset.day = DayObj.Name;
-Input.dataset.time = Time;
-Input.addEventListener("change", async () => {
-if (window.CurrentUserId !== 1) return;
-try {
-const Response = await fetch(`${SupabaseUrl}/functions/v1/save-extra`, {
-method: "POST",
-headers: {
-"Content-Type": "application/json",
-"apikey": SupabaseKey
-},
-body: JSON.stringify({
-day: DayObj.Name,
-time: Time,
-value: Input.value,
-userId: window.CurrentUserId
-})
-});
-const Result = await Response.json();
-if (!Response.ok || !Result.success) {
-console.error("Failed to save extra");
-}
-} catch (Err) {
-console.error("Extra save error:", Err);
-}
+const StorageKey = `extra_slot_${DayObj.Name}_${Time}`;
+Input.value = localStorage.getItem(StorageKey) || "";
+Input.addEventListener("input", () => {
+localStorage.setItem(StorageKey, Input.value);
 });
 Td.appendChild(Input);
 } else {
@@ -273,31 +265,38 @@ if (Item && Item.day && Item.time) {
 ScheduleMap[`${Item.day}_${Item.time}`] = Item;
 }
 }
-const ExtraInputs = document.querySelectorAll(".extra-slot-input");
-ExtraInputs.forEach(Input => {
-const Day = Input.dataset.day;
-const Time = Input.dataset.time;
-const Item = ScheduleMap[`${Day}_${Time}`];
-Input.value = Item && typeof Item.name === "string" ? Item.name : "";
-});
 const CurrentUserId = Number(window.CurrentUserId);
+const CurrentRoom = window.CurrentRoom || sessionStorage.getItem("scheduleRoom");
 const Tbody = document.getElementById("scheduleBody");
 const DaysUserHasSlot = new Set();
+const RoomDayCounts = {};
 ScheduleArray.forEach(Item => {
 if (Item && Number(Item.user_id) === CurrentUserId && Item.day) {
 DaysUserHasSlot.add(Item.day);
+}
+if (Item && Item.room && Item.day) {
+const Key = `${Item.day}_${Item.room}`;
+RoomDayCounts[Key] = (RoomDayCounts[Key] || 0) + 1;
+}
+});
+const RoomsAtLimit = new Set();
+ActiveDaysConfig.forEach(DayObj => {
+const Day = DayObj.Name;
+const Key = `${Day}_${CurrentRoom}`;
+if ((RoomDayCounts[Key] || 0) >= 2) {
+RoomsAtLimit.add(Day);
 }
 });
 const Now = new Date();
 const CurrentDayNum = Now.getDay();
 let AllTimesToRender = [...Times];
 if (CurrentUserId === 1) {
-AllTimesToRender.push("Pēc 23:00 1", "Pēc 23:00 2", "Pēc 23:00 3");
+AllTimesToRender.push("Ekstra 1", "Ekstra 2", "Ekstra 3");
 }
 AllTimesToRender.forEach((Time, RowIndex) => {
 const Row = Tbody.children[RowIndex];
 if (!Row) return;
-if (Time.startsWith("Pēc 23:00")) return;
+if (Time.startsWith("Ekstra")) return;
 ActiveDaysConfig.forEach((DayObj, DayIndex) => {
 const Cells = Row.querySelectorAll(".cell-split");
 const Cell = Cells[DayIndex];
@@ -324,7 +323,7 @@ if (DayIndex !== 4) IsSelectable = false;
 const Item = ScheduleMap[`${Day}_${Time}`];
 const NameEl = Cell.querySelector(".cell-name");
 const RoomEl = Cell.querySelector(".cell-room");
-Cell.classList.remove("slot-available", "slot-taken", "slot-mine", "user-has-slot", "is-day-today", "is-selectable", "is-admin", "is-past");
+Cell.classList.remove("slot-available", "slot-taken", "slot-mine", "slot-roommate", "user-has-slot", "is-day-today", "is-selectable", "is-admin", "is-past");
 if (CurrentUserId === 1) {
 Cell.classList.add("is-admin");
 }
@@ -337,7 +336,7 @@ Cell.classList.add("is-past");
 if (IsSelectable) {
 Cell.classList.add("is-selectable");
 }
-if (DaysUserHasSlot.has(Day)) {
+if (DaysUserHasSlot.has(Day) || RoomsAtLimit.has(Day)) {
 Cell.classList.add("user-has-slot");
 }
 if (Item) {
@@ -347,6 +346,8 @@ NameEl.textContent = typeof Item.name === "string" ? Item.name : "";
 RoomEl.textContent = typeof Item.room === "string" ? Item.room : "";
 if (Number(Item.user_id) === CurrentUserId) {
 Cell.classList.add("slot-mine");
+} else if (CurrentRoom && Item.room === CurrentRoom) {
+Cell.classList.add("slot-roommate");
 } else {
 Cell.classList.add("slot-taken");
 }
@@ -376,6 +377,10 @@ if (!IsAvailable && !IsMine) return;
 if (IsAvailable) {
 const ExistingUserSlots = document.querySelectorAll(`.cell-split.slot-mine[data-day="${Day}"]`);
 if (ExistingUserSlots.length > 0) {
+return;
+}
+const RoomSlots = document.querySelectorAll(`.cell-split.slot-mine[data-day="${Day}"], .cell-split.slot-roommate[data-day="${Day}"]`);
+if (RoomSlots.length >= 2) {
 return;
 }
 }
@@ -449,7 +454,9 @@ throw new Error(`Server returned invalid JSON: ${ResponseText}`);
 }
 if (!Response.ok || !Result.success) throw new Error(Result.error || Result.message || `Login failed (${Response.status})`);
 window.CurrentUserId = Number(Result.user.id);
+window.CurrentRoom = Result.user.room;
 sessionStorage.setItem("scheduleToken", Result.token);
+sessionStorage.setItem("scheduleRoom", Result.user.room);
 document.getElementById("userInfo").textContent = Result.user.name && Result.user.room ? `${Result.user.name} ${Result.user.room}` : Result.user.name;
 await LoadSchedule();
 SubscribeToScheduleChanges();
