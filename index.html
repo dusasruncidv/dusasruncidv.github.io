@@ -107,24 +107,36 @@ return Now > SlotTime;
 function CalculateActiveDays() {
 const Now = new Date();
 const CurrentDayNum = Now.getDay();
-let Active = [];
-const SunDate = new Date(Now);
-const DiffToSun = (0 - CurrentDayNum + 7) % 7;
-SunDate.setDate(Now.getDate() + DiffToSun);
-const MonDate = new Date(SunDate);
-MonDate.setDate(SunDate.getDate() + 1);
-const TueDate = new Date(SunDate);
-TueDate.setDate(SunDate.getDate() + 2);
-const WedDate = new Date(SunDate);
-WedDate.setDate(SunDate.getDate() + 3);
-const ThuDate = new Date(SunDate);
-ThuDate.setDate(SunDate.getDate() + 4);
-Active.push({ Name: "Svētdiena", DayDate: SunDate, DayNum: 0 });
-Active.push({ Name: "Pirmdiena", DayDate: MonDate, DayNum: 1 });
-Active.push({ Name: "Otrdiena", DayDate: TueDate, DayNum: 2 });
-Active.push({ Name: "Trešdiena", DayDate: WedDate, DayNum: 3 });
-Active.push({ Name: "Ceturtdiena", DayDate: ThuDate, DayNum: 4 });
-return Active;
+let baseSun = new Date(Now);
+let shift = 0;
+if (CurrentDayNum === 5 || CurrentDayNum === 6) {
+baseSun.setDate(Now.getDate() + ((7 - CurrentDayNum) % 7));
+shift = 0;
+} else {
+baseSun.setDate(Now.getDate() - CurrentDayNum);
+shift = CurrentDayNum;
+}
+let allDays = [
+{ Name: "Svētdiena", DayNum: 0 },
+{ Name: "Pirmdiena", DayNum: 1 },
+{ Name: "Otrdiena", DayNum: 2 },
+{ Name: "Trešdiena", DayNum: 3 },
+{ Name: "Ceturtdiena", DayNum: 4 }
+];
+allDays.forEach(d => {
+let dayDate = new Date(baseSun);
+let offset = d.DayNum;
+if (d.DayNum < shift) {
+offset += 7;
+}
+dayDate.setDate(baseSun.getDate() + offset);
+d.DayDate = dayDate;
+});
+let active = [];
+for (let i = 0; i < allDays.length; i++) {
+active.push(allDays[(i + shift) % allDays.length]);
+}
+return active;
 }
 function FormatDate(DateObj) {
 return `${String(DateObj.getDate()).padStart(2,"0")}.${String(DateObj.getMonth() + 1).padStart(2,"0")}`;
@@ -306,19 +318,11 @@ Cell.dataset.day = Day;
 Cell.dataset.time = Time;
 const IsToday = DayObj.DayNum === CurrentDayNum;
 const IsPast = IsToday && IsTimePast(Time);
-let IsSelectable = true;
-if (CurrentDayNum === 5 || CurrentDayNum === 6) {
-IsSelectable = false;
-} else if (CurrentDayNum === 0) {
-if (DayIndex !== 0 && DayIndex !== 1) IsSelectable = false;
-} else if (CurrentDayNum === 1) {
-if (DayIndex !== 1 && DayIndex !== 2) IsSelectable = false;
-} else if (CurrentDayNum === 2) {
-if (DayIndex !== 2 && DayIndex !== 3) IsSelectable = false;
-} else if (CurrentDayNum === 3) {
-if (DayIndex !== 3 && DayIndex !== 4) IsSelectable = false;
-} else if (CurrentDayNum === 4) {
-if (DayIndex !== 4) IsSelectable = false;
+let IsSelectable = false;
+if (CurrentDayNum >= 0 && CurrentDayNum <= 4) {
+if (DayObj.DayNum === CurrentDayNum || DayObj.DayNum === (CurrentDayNum + 1) % 7) {
+IsSelectable = true;
+}
 }
 const Item = ScheduleMap[`${Day}_${Time}`];
 const NameEl = Cell.querySelector(".cell-name");
