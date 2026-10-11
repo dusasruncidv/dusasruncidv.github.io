@@ -5,56 +5,61 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dušu Saraksts</title>
 <style>
-:root { --bg-color: #f8fafc; --border-color: #e2e8f0; --header-bg: #f1f5f9; --header-text: #334155; --text-color: #0f172a; --topbar-bg: #1e293b; --topbar-text: #f8fafc; --focus-ring: #3b82f6; --sub-header-bg: #f8fafc; --hover-bg: #f1f5f9; }
-* { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; background-color: var(--bg-color); color: var(--text-color); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; display: flex; flex-direction: column; }
-.topbar { height: 50px; background-color: var(--topbar-bg); color: var(--topbar-text); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; font-weight: 600; font-size: 1.1rem; letter-spacing: 0.025em; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
-.topbar-right { font-size: 0.95rem; font-weight: 500; color: #94a3b8; }
-.table-container { flex: 1; min-height: 0; height: calc(100vh - 50px); height: calc(100dvh - 50px); overflow: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
-table { border-collapse: separate; border-spacing: 0; width: 100%; height: 100%; table-layout: fixed; background-color: #ffffff; }
-tr { height: 3.125%; }
-th, td { border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 0; text-align: center; }
-th { background-color: var(--header-bg); font-weight: 600; color: var(--header-text); font-size: 0.9rem; }
-th:first-child, td:first-child { width: 100px; background-color: var(--header-bg); font-weight: 600; color: var(--header-text); font-size: 0.85rem; border-left: 1px solid var(--border-color); }
-tr:first-child th { border-top: 1px solid var(--border-color); }
-th:not(:first-child) { padding: 0; }
-tbody tr:hover { background-color: var(--hover-bg); }
-.day-header { display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 0 16px; font-size: 0.95rem; }
-.day-date { font-weight: 500; opacity: 0.7; font-size: 0.85rem; }
-.sub-header { display: flex; width: 100%; height: 100%; background-color: var(--header-bg); font-size: 0.9rem; font-weight: 600; color: var(--header-text); }
-.sub-name { width: 70%; min-width: 0; flex-shrink: 0; border-right: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; }
-.sub-room { width: 30%; min-width: 0; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-.cell-split { display: flex; width: 100%; max-width: 100%; height: 100%; cursor: pointer; transition: background-color 0.15s ease; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
-@media (hover: hover) { .cell-split.slot-available.is-selectable:not(.user-has-slot):not(.is-past):hover { background-color: rgba(34, 197, 94, 0.45) !important; color: #ffffff; } .cell-split.slot-taken:not(.is-past):hover { background-color: #9ca3af !important; color: #ffffff; } .cell-split.is-admin.slot-taken:not(.is-past):hover { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; } .cell-split.slot-mine:not(.is-past):hover { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; } }
-.cell-split.slot-available.is-selectable:not(.user-has-slot):not(.is-past):active { background-color: rgba(34, 197, 94, 0.45) !important; color: #ffffff; }
-.cell-split.slot-taken:not(.is-past):active { background-color: #9ca3af !important; color: #ffffff; }
-.cell-split.is-admin.slot-taken:not(.is-past):active { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; }
-.cell-split.slot-mine:not(.is-past):active { background-color: rgba(239, 68, 68, 0.45) !important; color: #ffffff; }
-.cell-split.slot-mine { background-color: rgba(239, 68, 68, 0.2) !important; }
-.cell-split:not(.is-selectable), .cell-split.is-past { background-color: #f1f5f9 !important; color: #94a3b8; cursor: not-allowed; opacity: 0.6; }
-.cell-name { width: 70%; min-width: 0; flex-shrink: 0; border-right: 1px solid var(--border-color); height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: background-color 0.15s ease; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 4px; pointer-events: none; }
-.cell-room { width: 30%; min-width: 0; flex-shrink: 0; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: background-color 0.15s ease; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 4px; pointer-events: none; }
-.login-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh; background-color: rgba(15, 23, 42, 0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-.login-box { background: white; padding: 32px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 320px; text-align: center; }
-.login-box h2 { margin-top: 0; margin-bottom: 20px; color: var(--text-color); }
-.login-box input { width: 100%; padding: 10px; margin-bottom: 16px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 1rem; }
-.login-box button { width: 100%; padding: 10px; background: var(--topbar-bg); color: white; border: none; border-radius: 4px; font-weight: 600; cursor: pointer; }
-.login-box button:hover { background: #334155; }
-.login-box button:disabled { opacity: 0.6; cursor: not-allowed; }
-.error-msg { color: #ef4444; font-size: 0.85rem; margin-top: 10px; display: none; }
-.loading-msg { color: #64748b; font-size: 0.85rem; margin-top: 10px; display: none; }
-.mobile-nav-arrows { display: none; background: none; border: none; color: var(--topbar-text); font-size: 1.2rem; cursor: pointer; padding: 4px 8px; }
-@media (max-width: 768px) { .topbar { justify-content: space-between; padding: 0 12px; } .topbar > span:first-of-type { display: none; } .topbar-right { color: var(--topbar-text); font-size: 1rem; font-weight: 600; } .mobile-nav-arrows { display: inline-block; } .table-container { height: auto; } table { table-layout: fixed; width: 100%; height: auto; } tr { height: auto; } th, td { height: 52px; } th:first-child, td:first-child { width: 80px; max-width: 80px; } th:not(:first-child), td:not(:first-child) { display: none; } th.is-mobile-active, td.is-mobile-active { display: table-cell !important; width: calc(100% - 80px); max-width: calc(100% - 80px); } body { padding-bottom: env(safe-area-inset-bottom, 0px); } }
+:root{--bg-color:#f8fafc;--border-color:#e2e8f0;--header-bg:#f1f5f9;--header-text:#334155;--text-color:#0f172a;--topbar-bg:#1e293b;--topbar-text:#f8fafc;--focus-ring:#3b82f6;--sub-header-bg:#f8fafc;--hover-bg:#f1f5f9;}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;width:100vw;height:100vh;height:100dvh;overflow:hidden;background-color:var(--bg-color);color:var(--text-color);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;display:flex;flex-direction:column;}
+.topbar{height:50px;background-color:var(--topbar-bg);color:var(--topbar-text);border-bottom:1px solid var(--border-color);display:flex;align-items:center;justify-content:space-between;padding:0 24px;font-weight:600;font-size:1.1rem;letter-spacing:0.025em;box-shadow:0 1px 3px rgba(0,0,0,0.1);}
+.topbar-right{font-size:0.95rem;font-weight:500;color:#94a3b8;}
+.table-container{flex:1;min-height:0;height:calc(100vh - 50px);height:calc(100dvh - 50px);overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
+table{border-collapse:separate;border-spacing:0;width:100%;height:100%;table-layout:fixed;background-color:#ffffff;}
+tr{height:3.125%;}
+th,td{border-right:1px solid var(--border-color);border-bottom:1px solid var(--border-color);padding:0;text-align:center;}
+th{background-color:var(--header-bg);font-weight:600;color:var(--header-text);font-size:0.9rem;}
+th:first-child,td:first-child{width:100px;background-color:var(--header-bg);font-weight:600;color:var(--header-text);font-size:0.85rem;border-left:1px solid var(--border-color);}
+tr:first-child th{border-top:1px solid var(--border-color);}
+th:not(:first-child){padding:0;}
+tbody tr:hover{background-color:var(--hover-bg);}
+.day-header{display:flex;justify-content:space-between;align-items:center;width:100%;padding:0 16px;font-size:0.95rem;}
+.day-date{font-weight:500;opacity:0.7;font-size:0.85rem;}
+.sub-header{display:flex;width:100%;height:100%;background-color:var(--header-bg);font-size:0.9rem;font-weight:600;color:var(--header-text);}
+.sub-name{width:70%;min-width:0;flex-shrink:0;border-right:1px solid var(--border-color);display:flex;align-items:center;justify-content:center;}
+.sub-room{width:30%;min-width:0;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.cell-split{display:flex;width:100%;max-width:100%;height:100%;cursor:pointer;transition:background-color 0.15s ease;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+@media(hover:hover){.cell-split.slot-available.is-selectable:not(.user-has-slot):not(.is-past):hover{background-color:rgba(34,197,94,0.45)!important;color:#ffffff;}.cell-split.slot-taken:not(.is-past):hover{background-color:#9ca3af!important;color:#ffffff;}.cell-split.is-admin.slot-taken:not(.is-past):hover{background-color:rgba(239,68,68,0.45)!important;color:#ffffff;}.cell-split.slot-mine:not(.is-past):hover{background-color:rgba(239,68,68,0.45)!important;color:#ffffff;}}
+.cell-split.slot-available.is-selectable:not(.user-has-slot):not(.is-past):active{background-color:rgba(34,197,94,0.45)!important;color:#ffffff;}
+.cell-split.slot-taken:not(.is-past):active{background-color:#9ca3af!important;color:#ffffff;}
+.cell-split.is-admin.slot-taken:not(.is-past):active{background-color:rgba(239,68,68,0.45)!important;color:#ffffff;}
+.cell-split.slot-mine:not(.is-past):active{background-color:rgba(239,68,68,0.45)!important;color:#ffffff;}
+.cell-split.slot-mine{background-color:rgba(239,68,68,0.2)!important;}
+.cell-split:not(.is-selectable),.cell-split.is-past{background-color:#f1f5f9!important;color:#94a3b8;cursor:not-allowed;opacity:0.6;}
+.cell-name{width:70%;min-width:0;flex-shrink:0;border-right:1px solid var(--border-color);height:100%;display:flex;align-items:center;justify-content:center;font-size:0.9rem;transition:background-color 0.15s ease;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 4px;pointer-events:none;}
+.cell-room{width:30%;min-width:0;flex-shrink:0;height:100%;display:flex;align-items:center;justify-content:center;font-size:0.9rem;transition:background-color 0.15s ease;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 4px;pointer-events:none;}
+.login-modal{position:fixed;top:0;left:0;width:100vw;height:100vh;height:100dvh;background-color:rgba(15,23,42,0.8);display:flex;justify-content:center;align-items:center;z-index:1000;}
+.login-box{background:white;padding:32px;border-radius:8px;box-shadow:0 10px 25px rgba(0,0,0,0.2);width:320px;text-align:center;}
+.login-box h2{margin-top:0;margin-bottom:20px;color:var(--text-color);}
+.login-inputs{display:flex;width:100%;gap:10px;margin-bottom:16px;}
+#roomInput{width:30%;padding:10px;margin-bottom:0;border:1px solid var(--border-color);border-radius:4px;font-size:1rem;}
+#passwordInput{width:70%;padding:10px;margin-bottom:0;border:1px solid var(--border-color);border-radius:4px;font-size:1rem;}
+.login-box button{width:100%;padding:10px;background:var(--topbar-bg);color:white;border:none;border-radius:4px;font-weight:600;cursor:pointer;}
+.login-box button:hover{background:#334155;}
+.login-box button:disabled{opacity:0.6;cursor:not-allowed;}
+.error-msg{color:#ef4444;font-size:0.85rem;margin-top:10px;display:none;}
+.loading-msg{color:#64748b;font-size:0.85rem;margin-top:10px;display:none;}
+.mobile-nav-arrows{display:none;background:none;border:none;color:var(--topbar-text);font-size:1.2rem;cursor:pointer;padding:4px 8px;}
+@media(max-width:768px){.topbar{justify-content:space-between;padding:0 12px;}.topbar>span:first-child{display:none;}.topbar-right{color:var(--topbar-text);font-size:1rem;font-weight:600;}.mobile-nav-arrows{display:inline-block;}.table-container{height:auto;}table{table-layout:fixed;width:100%;height:auto;}tr{height:auto;}th,td{height:52px;}th:first-child,td:first-child{width:80px;max-width:80px;}th:not(:first-child),td:not(:first-child){display:none;}th.is-mobile-active,td.is-mobile-active{display:table-cell!important;width:calc(100% - 80px);max-width:calc(100% - 80px);}body{padding-bottom:env(safe-area-inset-bottom,0px);}}
 </style>
 </head>
 <body>
 <div id="loginModal" class="login-modal">
 <div class="login-box">
 <h2>Dušu Saraksts</h2>
+<div class="login-inputs">
+<input type="text" id="roomInput" placeholder="Istaba" autocomplete="room">
 <input type="password" id="passwordInput" placeholder="Parole" autocomplete="current-password">
+</div>
 <button id="loginButton" onclick="Login()">Ienākt</button>
 <div id="loadingMsg" class="loading-msg">Pārbauda...</div>
-<div id="errorMsg" class="error-msg">Nepareiza parole!</div>
+<div id="errorMsg" class="error-msg">Nepareiza istaba vai parole!</div>
 </div>
 </div>
 <div class="topbar">
@@ -88,41 +93,23 @@ return Now > SlotTime;
 function CalculateActiveDays() {
 const Now = new Date();
 const CurrentDayNum = Now.getDay();
-const DaysList = [
-{ Name: "Pirmdiena", DayNum: 1 },
-{ Name: "Otrdiena", DayNum: 2 },
-{ Name: "Trešdiena", DayNum: 3 },
-{ Name: "Ceturtdiena", DayNum: 4 },
-{ Name: "Svētdiena", DayNum: 0 }
-];
 let Active = [];
-if (CurrentDayNum === 5 || CurrentDayNum === 6 || CurrentDayNum === 0) {
-const SundayDate = new Date(Now);
-let DiffToSun = (0 - CurrentDayNum + 7) % 7;
-if (CurrentDayNum === 0) DiffToSun = 0;
-SundayDate.setDate(Now.getDate() + DiffToSun);
-Active.push({ Name: "Svētdiena", DayDate: SundayDate, DayNum: 0 });
-const NextMon = new Date(SundayDate);
-NextMon.setDate(SundayDate.getDate() + 1);
-Active.push({ Name: "Pirmdiena", DayDate: NextMon, DayNum: 1 });
-const NextTue = new Date(SundayDate);
-NextTue.setDate(SundayDate.getDate() + 2);
-Active.push({ Name: "Otrdiena", DayDate: NextTue, DayNum: 2 });
-const NextWed = new Date(SundayDate);
-NextWed.setDate(SundayDate.getDate() + 3);
-Active.push({ Name: "Trešdiena", DayDate: NextWed, DayNum: 3 });
-const NextThu = new Date(SundayDate);
-NextThu.setDate(SundayDate.getDate() + 4);
-Active.push({ Name: "Ceturtdiena", DayDate: NextThu, DayNum: 4 });
-} else {
-const TodayIndex = DaysList.findIndex(D => D.DayNum === CurrentDayNum);
-for (let I = TodayIndex; I < DaysList.length; I++) {
-const Item = DaysList[I];
-const DayDate = new Date(Now);
-DayDate.setDate(Now.getDate() + (Item.DayNum - CurrentDayNum));
-Active.push({ Name: Item.Name, DayDate: DayDate, DayNum: Item.DayNum });
-}
-}
+const SunDate = new Date(Now);
+const DiffToSun = (0 - CurrentDayNum + 7) % 7;
+SunDate.setDate(Now.getDate() + DiffToSun);
+const MonDate = new Date(SunDate);
+MonDate.setDate(SunDate.getDate() + 1);
+const TueDate = new Date(SunDate);
+TueDate.setDate(SunDate.getDate() + 2);
+const WedDate = new Date(SunDate);
+WedDate.setDate(SunDate.getDate() + 3);
+const ThuDate = new Date(SunDate);
+ThuDate.setDate(SunDate.getDate() + 4);
+Active.push({ Name: "Svētdiena", DayDate: SunDate, DayNum: 0 });
+Active.push({ Name: "Pirmdiena", DayDate: MonDate, DayNum: 1 });
+Active.push({ Name: "Otrdiena", DayDate: TueDate, DayNum: 2 });
+Active.push({ Name: "Trešdiena", DayDate: WedDate, DayNum: 3 });
+Active.push({ Name: "Ceturtdiena", DayDate: ThuDate, DayNum: 4 });
 return Active;
 }
 function FormatDate(DateObj) {
@@ -137,7 +124,11 @@ ThDiena.textContent = "Diena";
 Tr1.appendChild(ThDiena);
 ActiveDaysConfig.forEach((DayObj, Index) => {
 const Th = document.createElement("th");
-if (Index === 0) Th.classList.add("is-today");
+const Now = new Date();
+const CurrentDayNum = Now.getDay();
+if (DayObj.DayNum === CurrentDayNum) {
+Th.classList.add("is-today");
+}
 if (Index === CurrentMobileDayIndex) Th.classList.add("is-mobile-active");
 Th.innerHTML = `<div class="day-header"><span class="day-name">${DayObj.Name}</span><span class="day-date">${FormatDate(DayObj.DayDate)}</span></div>`;
 Tr1.appendChild(Th);
@@ -148,7 +139,11 @@ ThLaiks.textContent = "Laiks";
 Tr2.appendChild(ThLaiks);
 ActiveDaysConfig.forEach((DayObj, Index) => {
 const Th = document.createElement("th");
-if (Index === 0) Th.classList.add("is-today");
+const Now = new Date();
+const CurrentDayNum = Now.getDay();
+if (DayObj.DayNum === CurrentDayNum) {
+Th.classList.add("is-today");
+}
 if (Index === CurrentMobileDayIndex) Th.classList.add("is-mobile-active");
 Th.innerHTML = `<div class="sub-header"><span class="sub-name">Vārds</span><span class="sub-room">Istaba</span></div>`;
 Tr2.appendChild(Th);
@@ -207,7 +202,12 @@ TimeCell.textContent = Time;
 Tr.appendChild(TimeCell);
 for (let I = 0; I < ActiveDaysConfig.length; I++) {
 const Td = document.createElement("td");
-if (I === 0) Td.classList.add("is-today");
+const DayObj = ActiveDaysConfig[I];
+const Now = new Date();
+const CurrentDayNum = Now.getDay();
+if (DayObj.DayNum === CurrentDayNum) {
+Td.classList.add("is-today");
+}
 if (I === CurrentMobileDayIndex) Td.classList.add("is-mobile-active");
 const Split = document.createElement("div");
 Split.className = "cell-split";
@@ -244,7 +244,6 @@ DaysUserHasSlot.add(Item.day);
 });
 const Now = new Date();
 const CurrentDayNum = Now.getDay();
-const IsFriOrSat = (CurrentDayNum === 5 || CurrentDayNum === 6);
 Times.forEach((Time, RowIndex) => {
 const Row = Tbody.children[RowIndex];
 if (!Row) return;
@@ -255,9 +254,22 @@ if (!Cell) return;
 const Day = DayObj.Name;
 Cell.dataset.day = Day;
 Cell.dataset.time = Time;
-const IsToday = DayIndex === 0;
+const IsToday = DayObj.DayNum === CurrentDayNum;
 const IsPast = IsToday && IsTimePast(Time);
-const IsSelectable = IsFriOrSat ? (DayIndex === 0) : (DayIndex === 0 || DayIndex === 1);
+let IsSelectable = true;
+if (CurrentDayNum === 5 || CurrentDayNum === 6) {
+IsSelectable = false;
+} else if (CurrentDayNum === 0) {
+if (DayIndex !== 0 && DayIndex !== 1) IsSelectable = false;
+} else if (CurrentDayNum === 1) {
+if (DayIndex !== 1 && DayIndex !== 2) IsSelectable = false;
+} else if (CurrentDayNum === 2) {
+if (DayIndex !== 2 && DayIndex !== 3) IsSelectable = false;
+} else if (CurrentDayNum === 3) {
+if (DayIndex !== 3 && DayIndex !== 4) IsSelectable = false;
+} else if (CurrentDayNum === 4) {
+if (DayIndex !== 4) IsSelectable = false;
+}
 const Item = ScheduleMap[`${Day}_${Time}`];
 const NameEl = Cell.querySelector(".cell-name");
 const RoomEl = Cell.querySelector(".cell-room");
@@ -300,17 +312,10 @@ Cell.classList.add("slot-available");
 async function HandleSlotClick(E, Cell) {
 if (E) E.stopPropagation();
 if (!window.CurrentUserId) return;
+if (!Cell.classList.contains("is-selectable")) return;
 if (Cell.classList.contains("is-past")) return;
 const Day = Cell.dataset.day;
 const Time = Cell.dataset.time;
-const DayIndex = ActiveDaysConfig.findIndex(D => D.Name === Day);
-const Now = new Date();
-const CurrentDayNum = Now.getDay();
-const IsFriOrSat = (CurrentDayNum === 5 || CurrentDayNum === 6);
-const MaxSelectableIndex = IsFriOrSat ? 0 : 1;
-if (DayIndex > MaxSelectableIndex) {
-return;
-}
 const IsMine = Cell.classList.contains("slot-mine");
 const IsAvailable = Cell.classList.contains("slot-available");
 const IsAdmin = window.CurrentUserId === 1;
@@ -364,6 +369,7 @@ if (Err) throw Err;
 RenderSchedule(Data);
 }
 async function Login() {
+const RoomInput = document.getElementById("roomInput");
 const PasswordInput = document.getElementById("passwordInput");
 const LoginButton = document.getElementById("loginButton");
 const ErrorMsg = document.getElementById("errorMsg");
@@ -379,6 +385,7 @@ headers: {
 "apikey": SupabaseKey
 },
 body: JSON.stringify({
+room: RoomInput.value,
 password: PasswordInput.value
 })
 });
@@ -406,6 +413,9 @@ LoadingMsg.style.display = "none";
 LoginButton.disabled = false;
 }
 }
+document.getElementById("roomInput").addEventListener("keydown", KeyEvent => {
+if (KeyEvent.key === "Enter") Login();
+});
 document.getElementById("passwordInput").addEventListener("keydown", KeyEvent => {
 if (KeyEvent.key === "Enter") Login();
 });
