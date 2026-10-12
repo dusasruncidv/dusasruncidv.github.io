@@ -244,10 +244,26 @@ if (IsExtraRow) {
 const Input = document.createElement("input");
 Input.type = "text";
 Input.className = "extra-slot-input";
-const StorageKey = `extra_slot_${DayObj.Name}_${Time}`;
-Input.value = localStorage.getItem(StorageKey) || "";
-Input.addEventListener("input", () => {
-localStorage.setItem(StorageKey, Input.value);
+Input.disabled = Number(window.CurrentUserId) !== 1;
+Input.addEventListener("change", async () => {
+if (Number(window.CurrentUserId) !== 1) return;
+try {
+await fetch(`${SupabaseUrl}/functions/v1/save-extra`, {
+method: "POST",
+headers: {
+"Content-Type": "application/json",
+"apikey": SupabaseKey
+},
+body: JSON.stringify({
+day: DayObj.Name,
+time: Time,
+value: Input.value,
+userId: window.CurrentUserId
+})
+});
+} catch (Failure) {
+console.error("Save extra error:", Failure);
+}
 });
 Td.appendChild(Input);
 } else {
@@ -268,13 +284,20 @@ Body.appendChild(Tr);
 }
 UpdateMobileArrowsState();
 }
-function RenderSchedule(Schedule) {
+function RenderSchedule(Schedule, Extras) {
 BuildEmptyTable();
 const ScheduleArray = Array.isArray(Schedule) ? Schedule : [];
+const ExtrasArray = Array.isArray(Extras) ? Extras : [];
 const ScheduleMap = {};
 for (const Item of ScheduleArray) {
 if (Item && Item.day && Item.time) {
 ScheduleMap[`${Item.day}_${Item.time}`] = Item;
+}
+}
+const ExtrasMap = {};
+for (const Item of ExtrasArray) {
+if (Item && Item.day && Item.time) {
+ExtrasMap[`${Item.day}_${Item.time}`] = Item.value;
 }
 }
 const CurrentUserId = Number(window.CurrentUserId);
@@ -308,7 +331,17 @@ AllTimesToRender.push("Ekstra 1", "Ekstra 2", "Ekstra 3");
 AllTimesToRender.forEach((Time, RowIndex) => {
 const Row = Tbody.children[RowIndex];
 if (!Row) return;
-if (Time.startsWith("Ekstra")) return;
+if (Time.startsWith("Ekstra")) {
+ActiveDaysConfig.forEach((DayObj, DayIndex) => {
+const Cells = Row.querySelectorAll("input.extra-slot-input");
+const Input = Cells[DayIndex];
+if (Input) {
+const Key = `${DayObj.Name}_${Time}`;
+Input.value = ExtrasMap[Key] || "";
+}
+});
+return;
+}
 ActiveDaysConfig.forEach((DayObj, DayIndex) => {
 const Cells = Row.querySelectorAll(".cell-split");
 const Cell = Cells[DayIndex];
@@ -421,12 +454,21 @@ RealtimeChannel = SupabaseClient
 LoadSchedule();
 }
 )
+.on(
+"postgres_changes",
+{ event: "*", schema: "public", table: "extras" },
+() => {
+LoadSchedule();
+}
+)
 .subscribe();
 }
 async function LoadSchedule() {
-const { data: Data, error: Err } = await SupabaseClient.from("schedule").select("id,day,time,name,room,user_id").order("time", { ascending: true });
-if (Err) throw Err;
-RenderSchedule(Data);
+const { data: ScheduleData, error: ScheduleErr } = await SupabaseClient.from("schedule").select("id,day,time,name,room,user_id").order("time", { ascending: true });
+if (ScheduleErr) throw ScheduleErr;
+const { data: ExtrasData, error: ExtrasErr } = await SupabaseClient.from("extras").select("id,day,time,value");
+if (ExtrasErr) throw ExtrasErr;
+RenderSchedule(ScheduleData, ExtrasData);
 }
 async function Login() {
 const RoomInput = document.getElementById("roomInput");
