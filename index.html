@@ -6,22 +6,22 @@
 <title>Dušu Saraksts</title>
 <style>
 :root{
-  --bg-color:#f8fafc;
-  --border-color:#e2e8f0;
-  --header-bg:#f1f5f9;
-  --header-text:#334155;
-  --text-color:#0f172a;
-  --topbar-bg:#1e293b;
-  --topbar-text:#f8fafc;
-  --focus-ring:#3b82f6;
-  --sub-header-bg:#f8fafc;
-  --hover-bg:#f1f5f9;
+--bg-color:#f8fafc;
+--border-color:#e2e8f0;
+--header-bg:#f1f5f9;
+--header-text:#334155;
+--text-color:#0f172a;
+--topbar-bg:#1e293b;
+--topbar-text:#f8fafc;
+--focus-ring:#3b82f6;
+--sub-header-bg:#f8fafc;
+--hover-bg:#f1f5f9;
 }
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;width:100vw;height:100vh;height:100dvh;overflow:hidden;background-color:var(--bg-color);color:var(--text-color);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;display:flex;flex-direction:column;}
 .topbar{height:50px;background-color:var(--topbar-bg);color:var(--topbar-text);border-bottom:1px solid var(--border-color);display:flex;align-items:center;justify-content:space-between;padding:0 24px;font-weight:600;font-size:1.1rem;letter-spacing:0.025em;box-shadow:0 1px 3px rgba(0,0,0,0.1);}
 .topbar-right{font-size:0.95rem;font-weight:500;color:#94a3b8;}
-.table-container{flex:1;min-height:0;height:calc(100vh - 50px);height:calc(100dvh - 50px);overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;}
+.table-container{flex:1;min-height:0;height:calc(100vh - 50px);height:calc(100dvh - 50px);overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;position:relative;}
 table{border-collapse:separate;border-spacing:0;width:100%;height:100%;table-layout:fixed;background-color:#ffffff;}
 tr{height:3.125%;}
 th,td{border-right:1px solid var(--border-color);border-bottom:1px solid var(--border-color);padding:0;text-align:center;}
@@ -60,7 +60,14 @@ tbody tr:hover{background-color:var(--hover-bg);}
 .loading-msg{color:#64748b;font-size:0.85rem;margin-top:10px;display:none;}
 .mobile-nav-arrows{display:none;background:none;border:none;color:var(--topbar-text);font-size:1.2rem;cursor:pointer;padding:4px 8px;}
 .extra-slot-input{width:100%;height:100%;border:none;background:transparent;text-align:center;font-size:0.9rem;color:var(--text-color);outline:none;}
-@media(max-width:768px){.topbar{justify-content:space-between;padding:0 12px;}.topbar>span:nth-child(2){display:none;}.topbar-right{color:var(--topbar-text);font-size:1rem;font-weight:600;}.mobile-nav-arrows{display:inline-block;}.table-container{height:auto;}table{table-layout:fixed;width:100%;height:auto;}tr{height:auto;}th,td{height:52px;}th:first-child,td:first-child{width:80px;max-width:80px;}th:not(:first-child),td:not(:first-child){display:none;}th.is-mobile-active,td.is-mobile-active{display:table-cell!important;width:calc(100% - 80px);max-width:calc(100% - 80px);}body{padding-bottom:env(safe-area-inset-bottom,0px);}}
+.mobile-notice{display:none;text-align:center;padding:16px;font-size:0.85rem;color:#64748b;font-weight:500;}
+@media(max-width:768px){.topbar{justify-content:space-between;padding:0 12px;}.topbar>span:nth-child(2){display:none;}.topbar-right{color:var(--topbar-text);font-size:1rem;font-weight:600;}.mobile-nav-arrows{display:inline-block;}.table-container{height:auto;}table{table-layout:fixed;width:100%;height:auto;}tr{height:auto;}th,td{height:52px;}th:first-child,td:first-child{width:80px;max-width:80px;}th:not(:first-child),td:not(:first-child){display:none;}th.is-mobile-active,td.is-mobile-active{display:table-cell!important;width:calc(100% - 80px);max-width:calc(100% - 80px);}.mobile-notice{display:block;}}
+.topbar-actions{display:flex;align-items:center;gap:16px;}
+.export-button{display:none;background:rgba(255,255,255,0.08);color:var(--topbar-text);border:1px solid rgba(255,255,255,0.15);border-radius:4px;padding:5px 12px;font-weight:500;font-size:0.85rem;cursor:pointer;transition:background-color 0.15s ease;}
+.export-button:hover{background:rgba(255,255,255,0.15);}
+.export-button:active{background:rgba(255,255,255,0.2);}
+.export-button:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;}
+@page{size:A4 portrait;margin:10mm;}@media print{html,body{height:auto!important;overflow:visible!important;display:block!important;}.topbar,.login-modal,.mobile-notice{display:none!important;}.table-container{height:277mm!important;min-height:0!important;overflow:visible!important;flex:none!important;display:flex!important;align-items:center!important;justify-content:center!important;}table{width:100%!important;height:260mm!important;}tr{height:auto!important;}th,td{height:auto!important;}body{background:#ffffff!important;color:#0f172a!important;}}
 </style>
 </head>
 <body>
@@ -79,14 +86,18 @@ tbody tr:hover{background-color:var(--hover-bg);}
 <div class="topbar">
 <button class="mobile-nav-arrows" id="prevDayBtn" onclick="ChangeMobileDay(-1)">&#9664;</button>
 <span>Upes Prospekts 18</span>
+<div class="topbar-actions">
+<button id="exportButton" class="export-button" onclick="ExportSchedule()">Eksportēt</button>
 <span id="userInfo" class="topbar-right"></span>
+</div>
 <button class="mobile-nav-arrows" id="nextDayBtn" onclick="ChangeMobileDay(1)">&#9654;</button>
 </div>
-<div class="table-container">
+<div class="table-container" id="tableContainer">
 <table>
 <thead id="scheduleHeader"></thead>
 <tbody id="scheduleBody"></tbody>
 </table>
+<div id="mobileNotice" class="mobile-notice" style="display:none;">Pēc 23:00 var pierakstīties 302. kabinetā!</div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -103,6 +114,24 @@ const [Hours, Minutes] = TimeStr.split(":").map(Number);
 const SlotTime = new Date(Now);
 SlotTime.setHours(Hours, Minutes, 0, 0);
 return Now > SlotTime;
+}
+function CheckNoticeVisibility() {
+const NoticeEl = document.getElementById("mobileNotice");
+if (!NoticeEl) return;
+if (window.innerWidth > 768 || Number(window.CurrentUserId) === 1) {
+NoticeEl.style.display = "none";
+return;
+}
+const Now = new Date();
+const CurrentHours = Now.getHours();
+const CurrentMinutes = Now.getMinutes();
+const TotalMinutes = CurrentHours * 60 + CurrentMinutes;
+const TargetMinutes = 22 * 60 + 45;
+if (TotalMinutes >= TargetMinutes) {
+NoticeEl.style.display = "block";
+} else {
+NoticeEl.style.display = "none";
+}
 }
 function CalculateActiveDays() {
 const Now = new Date();
@@ -283,6 +312,7 @@ Tr.appendChild(Td);
 Body.appendChild(Tr);
 }
 UpdateMobileArrowsState();
+CheckNoticeVisibility();
 }
 function RenderSchedule(Schedule, Extras) {
 BuildEmptyTable();
@@ -318,7 +348,7 @@ const RoomsAtLimit = new Set();
 ActiveDaysConfig.forEach(DayObj => {
 const Day = DayObj.Name;
 const Key = `${Day}_${CurrentRoom}`;
-if ((RoomDayCounts[Key] || 0) >= 2) {
+if (CurrentUserId !== 1 && (RoomDayCounts[Key] || 0) >= 2) {
 RoomsAtLimit.add(Day);
 }
 });
@@ -352,7 +382,9 @@ Cell.dataset.time = Time;
 const IsToday = DayObj.DayNum === CurrentDayNum;
 const IsPast = IsToday && IsTimePast(Time);
 let IsSelectable = false;
-if (CurrentDayNum >= 0 && CurrentDayNum <= 4) {
+if (CurrentUserId === 1) {
+IsSelectable = true;
+} else if (CurrentDayNum >= 0 && CurrentDayNum <= 4) {
 if (DayObj.DayNum === CurrentDayNum || DayObj.DayNum === (CurrentDayNum + 1) % 7) {
 IsSelectable = true;
 }
@@ -373,13 +405,17 @@ Cell.classList.add("is-past");
 if (IsSelectable) {
 Cell.classList.add("is-selectable");
 }
-if (DaysUserHasSlot.has(Day) || RoomsAtLimit.has(Day)) {
+if (CurrentUserId !== 1 && (DaysUserHasSlot.has(Day) || RoomsAtLimit.has(Day))) {
 Cell.classList.add("user-has-slot");
 }
 if (Item) {
 Cell.dataset.scheduleId = Item.id;
 Cell.dataset.userId = Item.user_id || "";
+if (String(Item.room) === "302") {
+NameEl.textContent = "Rezervēts";
+} else {
 NameEl.textContent = typeof Item.name === "string" ? Item.name : "";
+}
 RoomEl.textContent = typeof Item.room === "string" ? Item.room : "";
 if (Number(Item.user_id) === CurrentUserId) {
 Cell.classList.add("slot-mine");
@@ -397,6 +433,7 @@ Cell.classList.add("slot-available");
 }
 });
 });
+CheckNoticeVisibility();
 }
 async function HandleSlotClick(E, Cell) {
 if (E) E.stopPropagation();
@@ -407,8 +444,7 @@ const Day = Cell.dataset.day;
 const Time = Cell.dataset.time;
 const IsMine = Cell.classList.contains("slot-mine");
 const IsAvailable = Cell.classList.contains("slot-available");
-const IsAdmin = window.CurrentUserId === 1;
-if (IsAdmin && IsAvailable) return;
+const IsAdmin = Number(window.CurrentUserId) === 1;
 if (!IsAdmin) {
 if (!IsAvailable && !IsMine) return;
 if (IsAvailable) {
@@ -506,6 +542,7 @@ sessionStorage.setItem("scheduleRoom", Result.user.room);
 document.getElementById("userInfo").textContent = Result.user.name && Result.user.room ? `${Result.user.name} ${Result.user.room}` : Result.user.name;
 await LoadSchedule();
 SubscribeToScheduleChanges();
+UpdateExportVisibility();
 document.getElementById("loginModal").style.display = "none";
 } catch (Failure) {
 console.error("Login error:", Failure);
@@ -523,9 +560,13 @@ if (KeyEvent.key === "Enter") Login();
 document.getElementById("passwordInput").addEventListener("keydown", KeyEvent => {
 if (KeyEvent.key === "Enter") Login();
 });
+function IsPcAdmin(){return Number(window.CurrentUserId)===1&&window.innerWidth>768;}
+function UpdateExportVisibility(){const ExportButton=document.getElementById("exportButton");if(!ExportButton)return;ExportButton.style.display=IsPcAdmin()?"inline-block":"none";}
+function ExportSchedule(){if(!IsPcAdmin())return;const Now=new Date();const Year=Now.getFullYear();const Month=String(Now.getMonth()+1).padStart(2,"0");const Day=String(Now.getDate()).padStart(2,"0");const OriginalTitle=document.title;document.title=`Dušu Saraksts ${Month}-${Day}-${Year}`;window.addEventListener("afterprint",()=>{document.title=OriginalTitle;},{once:true});window.print();}
+window.addEventListener("resize",UpdateExportVisibility);
 window.addEventListener("DOMContentLoaded", () => {
 BuildEmptyTable();
-setInterval(() => { if (window.CurrentUserId) LoadSchedule(); }, 60000);
+setInterval(() => { if (window.CurrentUserId) { LoadSchedule(); CheckNoticeVisibility(); } }, 60000);
 });
 </script>
 </body>
