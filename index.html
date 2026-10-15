@@ -97,7 +97,7 @@ tbody tr:hover{background-color:var(--hover-bg);}
 <thead id="scheduleHeader"></thead>
 <tbody id="scheduleBody"></tbody>
 </table>
-<div id="mobileNotice" class="mobile-notice" style="display:none;">Pēc 23:00 var pierakstīties 302. kabinetā!</div>
+<div id="mobileNotice" class="mobile-notice" style="display:none;">Pēc 23:00 var pieteikties 302. kabinetā!</div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -118,20 +118,11 @@ return Now > SlotTime;
 function CheckNoticeVisibility() {
 const NoticeEl = document.getElementById("mobileNotice");
 if (!NoticeEl) return;
-if (window.innerWidth > 768 || Number(window.CurrentUserId) === 1) {
+if (window.innerWidth > 768 || !window.CurrentUserId || Number(window.CurrentUserId) === 1) {
 NoticeEl.style.display = "none";
 return;
 }
-const Now = new Date();
-const CurrentHours = Now.getHours();
-const CurrentMinutes = Now.getMinutes();
-const TotalMinutes = CurrentHours * 60 + CurrentMinutes;
-const TargetMinutes = 22 * 60 + 45;
-if (TotalMinutes >= TargetMinutes) {
 NoticeEl.style.display = "block";
-} else {
-NoticeEl.style.display = "none";
-}
 }
 function CalculateActiveDays() {
 const Now = new Date();
