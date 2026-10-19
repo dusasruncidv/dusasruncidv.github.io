@@ -61,6 +61,38 @@ tbody tr:hover{background-color:var(--hover-bg);}
 .logout-button:active{background:rgba(239,68,68,0.35);}
 .logout-button:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;}
 @page{size:A4 portrait;margin:10mm;}@media print{html,body{height:auto!important;overflow:visible!important;display:block!important;}.topbar,.login-modal,.mobile-notice{display:none!important;}.table-container{height:277mm!important;min-height:0!important;overflow:visible!important;flex:none!important;display:flex!important;align-items:center!important;justify-content:center!important;}table{width:100%!important;height:260mm!important;}tr{height:auto!important;}th,td{height:auto!important;}body{background:#ffffff!important;color:#0f172a!important;}}
+/* -- Customize */
+.halloween{--bg-color:#141210;--border-color:#3a2e25;--header-bg:#231a14;--header-text:#ff9d3b;--text-color:#f3efe6;--topbar-bg:#1a120e;--topbar-text:#ff9d3b;--focus-ring:#ff7518;--sub-header-bg:#1f1712;--hover-bg:#2d2018;}
+.halloween table{background-color:#1c1612;}
+.halloween .topbar{box-shadow:0 1px 3px rgba(0,0,0,0.5);}
+@media(min-width:769px){.halloween .topbar-right{color:#c29b7a;}}
+.halloween .day-date{opacity:0.8;}
+td.halloween{background-color:#1c1612;color:#f3efe6;}
+tbody tr:hover td.halloween{background-color:var(--hover-bg);}
+.halloween .login-modal{background-color:rgba(10,8,7,0.85);}
+.halloween .login-box{background:#1f1813;border:1px solid var(--border-color);box-shadow:0 10px 25px rgba(0,0,0,0.5);}
+.halloween .login-box h2{color:var(--topbar-text);}
+.halloween #roomInput,.halloween #passwordInput{background:#14100c;color:var(--text-color);}
+.halloween .login-box button{background:#b34700;}
+.halloween .login-box button:hover{background:#cc5200;}
+.halloween .error-msg{color:#ff5c5c;}
+.halloween .loading-msg{color:#c29b7a;}
+.halloween .mobile-notice{color:#c29b7a;}
+.halloween .export-button{background:rgba(255,157,59,0.1);border:1px solid rgba(255,157,59,0.25);}
+.halloween .export-button:hover{background:rgba(255,157,59,0.2);}
+.halloween .export-button:active{background:rgba(255,157,59,0.3);}
+.halloween .logout-button{background:rgba(218,54,51,0.2);color:#ff9999;border:1px solid rgba(218,54,51,0.4);}
+.halloween .logout-button:hover{background:rgba(218,54,51,0.35);color:#fff;}
+.halloween .logout-button:active{background:rgba(218,54,51,0.45);}
+@media(hover:hover){.halloween .cell-split.slot-available.is-selectable:not(.user-has-slot):not(.is-past):hover{background-color:rgba(46,160,67,0.45)!important;color:#ffffff;}.halloween .cell-split.slot-taken:not(.is-past):hover{background-color:#52453d!important;color:#ffffff;}.halloween .cell-split.is-admin.slot-taken:not(.is-past):hover{background-color:rgba(218,54,51,0.45)!important;color:#ffffff;}.halloween .cell-split.slot-mine:not(.is-past):hover{background-color:rgba(218,54,51,0.45)!important;color:#ffffff;}.halloween .cell-split.slot-roommate:not(.is-past):hover{background-color:rgba(235,115,10,0.45)!important;color:#ffffff;}}
+.halloween .cell-split.slot-available.is-selectable:not(.user-has-slot):not(.is-past):active{background-color:rgba(46,160,67,0.45)!important;color:#ffffff;}
+.halloween .cell-split.slot-taken:not(.is-past):active{background-color:#52453d!important;color:#ffffff;}
+.halloween .cell-split.is-admin.slot-taken:not(.is-past):active{background-color:rgba(218,54,51,0.45)!important;color:#ffffff;}
+.halloween .cell-split.slot-mine:not(.is-past):active{background-color:rgba(218,54,51,0.45)!important;color:#ffffff;}
+.halloween .cell-split.slot-roommate:not(.is-past):active{background-color:rgba(235,115,10,0.45)!important;color:#ffffff;}
+.halloween .cell-split.slot-mine{background-color:rgba(218,54,51,0.25)!important;}
+.halloween .cell-split.slot-roommate{background-color:rgba(235,115,10,0.25)!important;}
+.halloween .cell-split:not(.is-selectable),.halloween .cell-split.is-past{background-color:#201813!important;color:#7a6556;}
 </style>
 </head>
 <body>
@@ -105,6 +137,17 @@ const Times = ["15:30","15:45","16:00","16:15","16:30","16:45","17:00","17:15","
 let ActiveDaysConfig = [];
 let RealtimeChannel = null;
 let CurrentMobileDayIndex = 0;
+// -- Variables
+const HalloweenMonth = 9;
+const HalloweenFirstDay = 24;
+const HalloweenLastDay = 31;
+// -- Functions
+function IsHalloweenDate(DateObj) {
+return DateObj.getMonth() === HalloweenMonth && DateObj.getDate() >= HalloweenFirstDay && DateObj.getDate() <= HalloweenLastDay;
+}
+function ApplyHalloweenTheme() {
+document.documentElement.classList.toggle("halloween", IsHalloweenDate(new Date()));
+}
 function IsTimePast(TimeStr) {
 const Now = new Date();
 const [Hours, Minutes] = TimeStr.split(":").map(Number);
@@ -173,6 +216,7 @@ if (DayObj.DayNum === CurrentDayNum) {
 Th.classList.add("is-today");
 }
 if (Index === CurrentMobileDayIndex) Th.classList.add("is-mobile-active");
+if (IsHalloweenDate(DayObj.DayDate)) Th.classList.add("halloween");
 Th.innerHTML = `<div class="day-header"><span class="day-name">${DayObj.Name}</span><span class="day-date">${FormatDate(DayObj.DayDate)}</span></div>`;
 Tr1.appendChild(Th);
 });
@@ -188,6 +232,7 @@ if (DayObj.DayNum === CurrentDayNum) {
 Th.classList.add("is-today");
 }
 if (Index === CurrentMobileDayIndex) Th.classList.add("is-mobile-active");
+if (IsHalloweenDate(DayObj.DayDate)) Th.classList.add("halloween");
 Th.innerHTML = `<div class="sub-header"><span class="sub-name">Vārds</span><span class="sub-room">Istaba</span></div>`;
 Tr2.appendChild(Th);
 });
@@ -257,6 +302,7 @@ if (DayObj.DayNum === CurrentDayNum) {
 Td.classList.add("is-today");
 }
 if (I === CurrentMobileDayIndex) Td.classList.add("is-mobile-active");
+if (IsHalloweenDate(DayObj.DayDate)) Td.classList.add("halloween");
 if (IsExtraRow) {
 const Input = document.createElement("input");
 Input.type = "text";
@@ -595,6 +641,9 @@ document.getElementById("loginModal").style.display = "flex";
 }
 setInterval(() => { if (window.CurrentUserId) { LoadSchedule(); CheckNoticeVisibility(); } }, 60000);
 });
+// -- Events
+ApplyHalloweenTheme();
+setInterval(ApplyHalloweenTheme, 60000);
 </script>
 </body>
 </html>
