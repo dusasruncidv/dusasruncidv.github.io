@@ -5,18 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dušu Saraksts</title>
 <style>
-:root{
---bg-color:#f8fafc;
---border-color:#e2e8f0;
---header-bg:#f1f5f9;
---header-text:#334155;
---text-color:#0f172a;
---topbar-bg:#1e293b;
---topbar-text:#f8fafc;
---focus-ring:#3b82f6;
---sub-header-bg:#f8fafc;
---hover-bg:#f1f5f9;
-}
+:root{--bg-color:#f8fafc;--border-color:#e2e8f0;--header-bg:#f1f5f9;--header-text:#334155;--text-color:#0f172a;--topbar-bg:#1e293b;--topbar-text:#f8fafc;--focus-ring:#3b82f6;--sub-header-bg:#f8fafc;--hover-bg:#f1f5f9;}
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;width:100vw;height:100vh;height:100dvh;overflow:hidden;background-color:var(--bg-color);color:var(--text-color);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;display:flex;flex-direction:column;}
 .topbar{height:50px;background-color:var(--topbar-bg);color:var(--topbar-text);border-bottom:1px solid var(--border-color);display:flex;align-items:center;justify-content:space-between;padding:0 24px;font-weight:600;font-size:1.1rem;letter-spacing:0.025em;box-shadow:0 1px 3px rgba(0,0,0,0.1);}
@@ -61,17 +50,21 @@ tbody tr:hover{background-color:var(--hover-bg);}
 .mobile-nav-arrows{display:none;background:none;border:none;color:var(--topbar-text);font-size:1.2rem;cursor:pointer;padding:4px 8px;}
 .extra-slot-input{width:100%;height:100%;border:none;background:transparent;text-align:center;font-size:0.9rem;color:var(--text-color);outline:none;}
 .mobile-notice{display:none;text-align:center;padding:16px;font-size:0.85rem;color:#64748b;font-weight:500;}
-@media(max-width:768px){.topbar{justify-content:space-between;padding:0 12px;}.topbar>span:nth-child(2){display:none;}.topbar-right{color:var(--topbar-text);font-size:1rem;font-weight:600;}.mobile-nav-arrows{display:inline-block;}.table-container{height:auto;}table{table-layout:fixed;width:100%;height:auto;}tr{height:auto;}th,td{height:52px;}th:first-child,td:first-child{width:80px;max-width:80px;}th:not(:first-child),td:not(:first-child){display:none;}th.is-mobile-active,td.is-mobile-active{display:table-cell!important;width:calc(100% - 80px);max-width:calc(100% - 80px);}.mobile-notice{display:block;}}
-.topbar-actions{display:flex;align-items:center;gap:16px;}
+@media(max-width:768px){.topbar{justify-content:space-between;padding:0 12px;}.topbar>span:nth-child(2){display:none;}.topbar-right{color:var(--topbar-text);font-size:1rem;font-weight:600;}.mobile-nav-arrows{display:inline-block;}.table-container{height:auto;}table{table-layout:fixed;width:100%;height:auto;}tr{height:auto;}th,td{height:52px;}th:first-child,td:first-child{width:80px;max-width:80px;}th:not(:first-child),td:not(:first-child){display:none;}th.is-mobile-active,td.is-mobile-active{display:table-cell!important;width:calc(100% - 80px);max-width:calc(100% - 80px);}.mobile-notice{display:block;}.logout-text{display:none;}}
+.topbar-actions{display:flex;align-items:center;gap:12px;}
 .export-button{display:none;background:rgba(255,255,255,0.08);color:var(--topbar-text);border:1px solid rgba(255,255,255,0.15);border-radius:4px;padding:5px 12px;font-weight:500;font-size:0.85rem;cursor:pointer;transition:background-color 0.15s ease;}
 .export-button:hover{background:rgba(255,255,255,0.15);}
 .export-button:active{background:rgba(255,255,255,0.2);}
 .export-button:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;}
+.logout-button{display:none;align-items:center;gap:6px;background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);border-radius:4px;padding:5px 10px;font-weight:500;font-size:0.85rem;cursor:pointer;transition:background-color 0.15s ease;}
+.logout-button:hover{background:rgba(239,68,68,0.25);color:#fff;}
+.logout-button:active{background:rgba(239,68,68,0.35);}
+.logout-button:focus-visible{outline:2px solid var(--focus-ring);outline-offset:2px;}
 @page{size:A4 portrait;margin:10mm;}@media print{html,body{height:auto!important;overflow:visible!important;display:block!important;}.topbar,.login-modal,.mobile-notice{display:none!important;}.table-container{height:277mm!important;min-height:0!important;overflow:visible!important;flex:none!important;display:flex!important;align-items:center!important;justify-content:center!important;}table{width:100%!important;height:260mm!important;}tr{height:auto!important;}th,td{height:auto!important;}body{background:#ffffff!important;color:#0f172a!important;}}
 </style>
 </head>
 <body>
-<div id="loginModal" class="login-modal">
+<div id="loginModal" class="login-modal" style="display:none;">
 <div class="login-box">
 <h2>Dušu Saraksts</h2>
 <div class="login-inputs">
@@ -88,6 +81,10 @@ tbody tr:hover{background-color:var(--hover-bg);}
 <span>Upes Prospekts 18</span>
 <div class="topbar-actions">
 <button id="exportButton" class="export-button" onclick="ExportSchedule()">Eksportēt</button>
+<button id="logoutButton" class="logout-button" onclick="Logout()" title="Izrakstīties">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+<span class="logout-text">Izrakstīties</span>
+</button>
 <span id="userInfo" class="topbar-right"></span>
 </div>
 <button class="mobile-nav-arrows" id="nextDayBtn" onclick="ChangeMobileDay(1)">&#9654;</button>
@@ -97,8 +94,7 @@ tbody tr:hover{background-color:var(--hover-bg);}
 <thead id="scheduleHeader"></thead>
 <tbody id="scheduleBody"></tbody>
 </table>
-<div id="mobileNotice" class="mobile-notice" style="display:none;">302. kabinetā var mainīt paroli 
-  un pieteikties pēc 23:00.</div>
+<div id="mobileNotice" class="mobile-notice" style="display:none;">302. kabinetā var mainīt paroli un pieteikties pēc 23:00.</div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -323,7 +319,7 @@ ExtrasMap[`${Item.day}_${Item.time}`] = Item.value;
 }
 }
 const CurrentUserId = Number(window.CurrentUserId);
-const CurrentRoom = window.CurrentRoom || sessionStorage.getItem("scheduleRoom");
+const CurrentRoom = window.CurrentRoom || localStorage.getItem("scheduleRoom");
 const Tbody = document.getElementById("scheduleBody");
 const DaysUserHasSlot = new Set();
 const RoomDayCounts = {};
@@ -498,15 +494,19 @@ const { data: ExtrasData, error: ExtrasErr } = await SupabaseClient.from("extras
 if (ExtrasErr) throw ExtrasErr;
 RenderSchedule(ScheduleData, ExtrasData);
 }
-async function Login() {
+async function Login(AutoRoom = null, AutoPassword = null) {
 const RoomInput = document.getElementById("roomInput");
 const PasswordInput = document.getElementById("passwordInput");
 const LoginButton = document.getElementById("loginButton");
 const ErrorMsg = document.getElementById("errorMsg");
 const LoadingMsg = document.getElementById("loadingMsg");
+const RoomVal = AutoRoom || RoomInput.value;
+const PassVal = AutoPassword || PasswordInput.value;
+if (!AutoRoom) {
 ErrorMsg.style.display = "none";
 LoadingMsg.style.display = "block";
-LoginButton.disabled = true;
+if(LoginButton) LoginButton.disabled = true;
+}
 try {
 const Response = await fetch(`${SupabaseUrl}/functions/v1/login`, {
 method: "POST",
@@ -515,8 +515,8 @@ headers: {
 "apikey": SupabaseKey
 },
 body: JSON.stringify({
-room: RoomInput.value,
-password: PasswordInput.value
+room: RoomVal,
+password: PassVal
 })
 });
 const ResponseText = await Response.text();
@@ -529,22 +529,49 @@ throw new Error(`Server returned invalid JSON: ${ResponseText}`);
 if (!Response.ok || !Result.success) throw new Error(Result.error || Result.message || `Login failed (${Response.status})`);
 window.CurrentUserId = Number(Result.user.id);
 window.CurrentRoom = Result.user.room;
-sessionStorage.setItem("scheduleToken", Result.token);
-sessionStorage.setItem("scheduleRoom", Result.user.room);
+localStorage.setItem("scheduleRoom", Result.user.room);
+localStorage.setItem("schedulePassword", PassVal);
 document.getElementById("userInfo").textContent = Result.user.name && Result.user.room ? `${Result.user.name} ${Result.user.room}` : Result.user.name;
 await LoadSchedule();
 SubscribeToScheduleChanges();
 UpdateExportVisibility();
+UpdateLogoutVisibility();
 document.getElementById("loginModal").style.display = "none";
 } catch (Failure) {
 console.error("Login error:", Failure);
+if (AutoRoom) {
+localStorage.removeItem("scheduleRoom");
+localStorage.removeItem("schedulePassword");
+document.getElementById("loginModal").style.display = "flex";
+} else {
 PasswordInput.value = "";
 ErrorMsg.textContent = Failure.message;
 ErrorMsg.style.display = "block";
-} finally {
-LoadingMsg.style.display = "none";
-LoginButton.disabled = false;
 }
+} finally {
+if (!AutoRoom) {
+LoadingMsg.style.display = "none";
+if(LoginButton) LoginButton.disabled = false;
+}
+}
+}
+function Logout() {
+window.CurrentUserId = null;
+window.CurrentRoom = null;
+localStorage.removeItem("scheduleRoom");
+localStorage.removeItem("schedulePassword");
+if (RealtimeChannel) {
+SupabaseClient.removeChannel(RealtimeChannel);
+RealtimeChannel = null;
+}
+document.getElementById("userInfo").textContent = "";
+document.getElementById("roomInput").value = "";
+document.getElementById("passwordInput").value = "";
+BuildEmptyTable();
+document.getElementById("loginModal").style.display = "flex";
+UpdateExportVisibility();
+UpdateLogoutVisibility();
+CheckNoticeVisibility();
 }
 document.getElementById("roomInput").addEventListener("keydown", KeyEvent => {
 if (KeyEvent.key === "Enter") Login();
@@ -554,10 +581,18 @@ if (KeyEvent.key === "Enter") Login();
 });
 function IsPcAdmin(){return Number(window.CurrentUserId)===1&&window.innerWidth>768;}
 function UpdateExportVisibility(){const ExportButton=document.getElementById("exportButton");if(!ExportButton)return;ExportButton.style.display=IsPcAdmin()?"inline-block":"none";}
-function ExportSchedule(){if(!IsPcAdmin())return;const Now=new Date();const Year=Now.getFullYear();const Month=String(Now.getMonth()+1).padStart(2,"0");const Day=String(Now.getDate()).padStart(2,"0");const OriginalTitle=document.title;document.title=`Dušu Saraksts ${Month}-${Day}-${Year}`;window.addEventListener("afterprint",()=>{document.title=OriginalTitle;},{once:true});window.print();}
-window.addEventListener("resize",UpdateExportVisibility);
+function UpdateLogoutVisibility(){const LogoutButton=document.getElementById("logoutButton");if(!LogoutButton)return;LogoutButton.style.display=window.CurrentUserId?"inline-flex":"none";}
+function ExportSchedule(){if(!IsPcAdmin())return;const Now=new Date();const Year=Now.getFullYear();const Month=String(Now.getDate()).padStart(2,"0");const Day=String(Now.getDate()).padStart(2,"0");const OriginalTitle=document.title;document.title=`Dušu Saraksts ${Month}-${Day}-${Year}`;window.addEventListener("afterprint",()=>{document.title=OriginalTitle;},{once:true});window.print();}
+window.addEventListener("resize",()=>{UpdateExportVisibility();});
 window.addEventListener("DOMContentLoaded", () => {
+const SavedRoom = localStorage.getItem("scheduleRoom");
+const SavedPass = localStorage.getItem("schedulePassword");
+if (SavedRoom && SavedPass) {
+Login(SavedRoom, SavedPass);
+} else {
 BuildEmptyTable();
+document.getElementById("loginModal").style.display = "flex";
+}
 setInterval(() => { if (window.CurrentUserId) { LoadSchedule(); CheckNoticeVisibility(); } }, 60000);
 });
 </script>
