@@ -628,16 +628,7 @@ if (KeyEvent.key === "Enter") Login();
 function IsPcAdmin(){return Number(window.CurrentUserId)===1&&window.innerWidth>768;}
 function UpdateExportVisibility(){const ExportButton=document.getElementById("exportButton");if(!ExportButton)return;ExportButton.style.display=IsPcAdmin()?"inline-block":"none";}
 function UpdateLogoutVisibility(){const LogoutButton=document.getElementById("logoutButton");if(!LogoutButton)return;LogoutButton.style.display=window.CurrentUserId?"inline-flex":"none";}
-function ExportSchedule(){
-    if(!IsPcAdmin())return;
-    const Now=new Date();
-    const Year=Now.getFullYear();
-    const Month=String(Now.getMonth() + 1).padStart(2,"0");
-    const Day=String(Now.getDate()).padStart(2,"0");
-    const OriginalTitle=document.title;
-    document.title=`Dušu Saraksts ${Month}-${Day}-${Year}`;
-    window.print();
-}
+function ExportSchedule(){if(!IsPcAdmin())return;const Now=new Date();const Year=Now.getFullYear();const Month=String(Now.getMonth()+1).padStart(2,"0");const Day=String(Now.getDate()).padStart(2,"0");const OriginalTitle=document.title;document.title=`Dušu Saraksts ${Day}-${Month}-${Year}`;window.addEventListener("afterprint",()=>{document.title=OriginalTitle;},{once:true});window.print();}
 window.addEventListener("resize",()=>{UpdateExportVisibility();});
 window.addEventListener("DOMContentLoaded", () => {
 const SavedRoom = localStorage.getItem("scheduleRoom");
